@@ -27,7 +27,7 @@
 
 > **CREATE EXTENSION**
 
-> *fitnessclub3tons=#** ```exit```
+> **fitnessclub3tons=#** ```exit```
 
 
 ## Подключение автоматизированной миграции БД
