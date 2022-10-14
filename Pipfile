@@ -10,6 +10,8 @@ uvicorn = "*"
 alembic = "*"
 
 [dev-packages]
+sqlacodegen = "*"
+pymysql = "*"
 
 [requires]
 python_version = "3.10"

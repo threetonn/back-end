@@ -58,3 +58,7 @@ uvicorn app.main:app --reload
 Остановка базы данных и удаление контейнера:
 
 ``docker compose down``
+
+
+Команда для создания файла models.py
+```sqlacodegen mysql+pymysql://root:admin@127.0.0.1:3306/mydb > app/models.py```
