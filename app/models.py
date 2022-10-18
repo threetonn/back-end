@@ -1,10 +1,8 @@
-# coding: utf-8
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Table, Text, text
-from sqlalchemy.dialects.mysql import TINYINT
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Boolean, Table, Text
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from .database import Base
 
-Base = declarative_base()
+
 metadata = Base.metadata
 
 
@@ -53,7 +51,7 @@ class Subscription(Base):
     name = Column(String(45), nullable=False)
     description = Column(Text)
     price = Column(Float(asdecimal=True), nullable=False)
-    is_active = Column(TINYINT, nullable=False, server_default=text("'1'"))
+    is_active = Column(Boolean, nullable=False)
     SubscriptionDuration_id = Column(ForeignKey('subscriptionduration.id'), nullable=False, index=True)
 
     SubscriptionDuration = relationship('Subscriptionduration')
@@ -70,7 +68,7 @@ class User(Base):
     birthday = Column(DateTime, nullable=False)
     email = Column(String(45), nullable=False, unique=True)
     phonenumber = Column(String(45), nullable=False, unique=True)
-    password = Column(String(45), nullable=False)
+    password = Column(String(128), nullable=False)
     Gender_id = Column(ForeignKey('gender.id'), nullable=False, index=True)
     Role_id = Column(ForeignKey('role.id'), nullable=False, index=True)
 
