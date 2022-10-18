@@ -17,7 +17,7 @@
 
 ```docker compose up -d```
 
-Подключение к базе данных и настройка:
+<!-- Подключение к базе данных и настройка:
 
 ```docker compose exec db psql fitnessclub3tons --username root --password```
 
@@ -27,7 +27,7 @@
 
 > **CREATE EXTENSION**
 
-> **fitnessclub3tons=#** ```exit```
+> **fitnessclub3tons=#** ```exit``` -->
 
 
 ## Подключение автоматизированной миграции БД
