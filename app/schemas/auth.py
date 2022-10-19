@@ -1,6 +1,10 @@
 from pydantic import BaseModel, EmailStr, PastDate
 
 
+class Gender(BaseModel):
+    name: str
+
+
 class UserBase(BaseModel):
     """Стандартная информация о пользователе"""
     name: str
@@ -10,6 +14,7 @@ class UserBase(BaseModel):
     email: EmailStr
     phonenumber: str
     Gender_id: int
+    
 
 
 class ClientCreate(UserBase):

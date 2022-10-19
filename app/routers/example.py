@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Security
 from app.models import User
-from app.utils import auth
+from app.permissions import is_admin, is_manager, is_trainer
 
 
 router = APIRouter(
@@ -9,15 +9,15 @@ router = APIRouter(
 
 
 @router.post('/foradmin')
-def secret_data_for_admin(user: User = Security(auth.is_admin)):
-    return user
+def secret_data_for_admin(user: User = Security(is_admin)):
+    return {"result": "Ответ приходит только Администратору"}
 
 
 @router.post('/fortrainer')
-def secret_data_for_trainer(user: User = Security(auth.is_trainer)):
-    return user
+def secret_data_for_trainer(user: User = Security(is_trainer)):
+    return {"result": "Ответ приходит только Тренеру"}
 
 
 @router.post('/formanager')
-def secret_data_for_manager(user: User = Security(auth.is_manager)):
-    return user
+def secret_data_for_manager(user: User = Security(is_manager)):
+    return {"result": "Ответ приходит только Менеджеру"}
