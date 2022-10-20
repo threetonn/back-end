@@ -9,21 +9,23 @@ class UserBase(BaseModel):
     """Стандартная информация о пользователе"""
     name: str
     surname: str
-    patronomic: str | None = None
+    patronymic: str | None = None
     birthday: PastDate
     email: EmailStr
-    phonenumber: str
-    Gender_id: int
-    
+    phone: str    
 
 
 class ClientCreate(UserBase):
     """ Проверка sign-up запроса """
     password: str
+    gender: str
+
 
 class UserOut(UserBase):
     id: int
     Role_id: int
+    Gender_id: int
+
 
     class Config:
         orm_mode = True

@@ -63,10 +63,10 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.String(length=45), nullable=False),
     sa.Column('surname', sa.String(length=45), nullable=False),
-    sa.Column('patronomic', sa.String(length=45), nullable=True),
+    sa.Column('patronymic', sa.String(length=45), nullable=True),
     sa.Column('birthday', sa.DateTime(), nullable=False),
     sa.Column('email', sa.String(length=45), nullable=False),
-    sa.Column('phonenumber', sa.String(length=45), nullable=False),
+    sa.Column('phone', sa.String(length=45), nullable=False),
     sa.Column('password', sa.String(length=128), nullable=False),
     sa.Column('Gender_id', sa.Integer(), nullable=False),
     sa.Column('Role_id', sa.Integer(), nullable=False),
@@ -74,7 +74,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['Role_id'], ['role.id'], ),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
-    sa.UniqueConstraint('phonenumber')
+    sa.UniqueConstraint('phone')
     )
     op.create_index(op.f('ix_user_Gender_id'), 'user', ['Gender_id'], unique=False)
     op.create_index(op.f('ix_user_Role_id'), 'user', ['Role_id'], unique=False)
