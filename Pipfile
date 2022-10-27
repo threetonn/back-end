@@ -12,6 +12,7 @@ pydantic = {extras = ["email"], version = "*"}
 bcrypt = "*"
 psycopg2 = "*"
 pyjwt = "*"
+python-multipart = "*"
 
 [dev-packages]
 sqlacodegen = "*"
