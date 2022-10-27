@@ -4,12 +4,19 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-databases = "*"
 fastapi = "*"
 uvicorn = "*"
 alembic = "*"
+passlib = "*"
+pydantic = {extras = ["email"], version = "*"}
+bcrypt = "*"
+psycopg2 = "*"
+pyjwt = "*"
+python-multipart = "*"
 
 [dev-packages]
+sqlacodegen = "*"
+pymysql = "*"
 
 [requires]
 python_version = "3.10"
