@@ -1,8 +1,14 @@
 from pydantic import BaseModel, EmailStr, PastDate
 
 
-class Gender(BaseModel):
-    name: str
+class RefreshToken(BaseModel):
+    """ Получение нового access_token """
+    access_token: str
+
+
+class SignIn(RefreshToken):
+    """ Получение access_token и refresh_token """
+    refresh_token: str
 
 
 class UserBase(BaseModel):

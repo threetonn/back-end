@@ -1,4 +1,4 @@
-from app.models import User, Role, Gender
+from app.models import User, Role
 from app.schemas.auth import ClientCreate
 from app.auth_class import Auth
 from sqlalchemy.orm import Session

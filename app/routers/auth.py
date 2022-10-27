@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Security
 from app.models import User
 from app.utils.auth import get_user_by_email, create_user
 from app.permissions import get_current_user
-from app.schemas.auth import ClientCreate, Login, UserOut
+from app.schemas.auth import ClientCreate, Login, UserOut, RefreshToken, SignIn
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.auth_class import Auth
 from app.database import get_db
@@ -13,6 +13,7 @@ security = HTTPBearer()
 auth_handler = Auth()
 router = APIRouter(
     tags=["Authorization"],
+    prefix="/auth",
 )
 
 
@@ -25,19 +26,19 @@ def signup(user: ClientCreate, db: Session = Depends(get_db)):
     return create_user(db=db, user=user)
 
 
-@router.post('/signin')
+@router.post('/signin', response_model=SignIn)
 def login(user: Login, db: Session = Depends(get_db)):
     db_user = get_user_by_email(db, email=user.email)
     if (db_user is None):
-        return HTTPException(status_code=401, detail='Invalid username')
+        raise HTTPException(status_code=401, detail='Invalid email')
     if (not auth_handler.verify_password(user.password, db_user.password)):
-        return HTTPException(status_code=401, detail='Invalid password')
+        raise HTTPException(status_code=401, detail='Invalid password')
     access_token = auth_handler.encode_token(user.email)
     refresh_token = auth_handler.encode_refresh_token(user.email)
     return {'access_token': access_token, 'refresh_token': refresh_token}
 
 
-@router.get('/refresh_token')
+@router.get('/refresh_token', response_model=RefreshToken)
 def refresh_token(credentials: HTTPAuthorizationCredentials = Security(security)):
     refresh_token = credentials.credentials
     new_token = auth_handler.refresh_token(refresh_token)
