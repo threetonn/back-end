@@ -13,7 +13,7 @@ auth_handler = Auth()
 def get_current_user(db: Session = Depends(get_db), credentials: HTTPAuthorizationCredentials = Depends(security)):
     """ Получение текущего пользователя """
     token = credentials.credentials
-    email = auth_handler.decode_token(token)['sub']
+    email = auth_handler.decode_token(token)
     user =  get_user_by_email(db, email)
     if user is None:
         raise HTTPException(status_code=402, detail='Unauthorized')
