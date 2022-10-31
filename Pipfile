@@ -13,6 +13,7 @@ bcrypt = "*"
 psycopg2 = "*"
 pyjwt = "*"
 python-multipart = "*"
+aiofiles = "*"
 
 [dev-packages]
 sqlacodegen = "*"

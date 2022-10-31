@@ -69,6 +69,7 @@ class User(Base):
     email = Column(String(45), nullable=False, unique=True)
     phone = Column(String(45), nullable=False, unique=True)
     password = Column(String(128), nullable=False)
+    image = Column(String(), nullable=True)
     Gender_id = Column(ForeignKey('gender.id'), nullable=False, index=True)
     Role_id = Column(ForeignKey('role.id'), nullable=False, index=True)
 
