@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import auth, role, gender, example
+from app.routers import auth, profiles, role, gender, example
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -14,6 +14,9 @@ app.add_middleware(
 )
 
 app.include_router(auth.router)
+
+app.include_router(profiles.router)
+
 app.include_router(role.router)
 app.include_router(gender.router)
 
