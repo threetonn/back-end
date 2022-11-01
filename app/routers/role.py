@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from app.utils import role
+from app.utils.role import get_roles
 from app.auth_class import Auth
 from app.database import get_db
 from sqlalchemy.orm import Session
@@ -13,4 +13,4 @@ router = APIRouter(
 
 @router.get('/roles')
 def roles(db: Session = Depends(get_db)):
-    return role.get_roles(db)
+    return get_roles(db)
