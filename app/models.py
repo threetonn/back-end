@@ -91,6 +91,7 @@ class User(Base):
     Gender_id = Column(ForeignKey('gender.id'), nullable=False, index=True)
     Role_id = Column(ForeignKey('role.id'), nullable=False, index=True)
     image = Column(String(), nullable=True)
+    bio = Column(Text, nullable=True)
 
     Gender = relationship('Gender')
     Role = relationship('Role')
