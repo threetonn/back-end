@@ -43,8 +43,3 @@ def refresh_token(credentials: HTTPAuthorizationCredentials = Security(security)
     refresh_token = credentials.credentials
     new_token = auth_handler.refresh_token(refresh_token)
     return {'access_token': new_token}
-
-
-@router.get('/me', response_model=UserOut)
-def me(user: User = Security(get_current_user)):
-    return user
