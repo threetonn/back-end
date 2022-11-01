@@ -2,6 +2,7 @@ import os
 from fastapi import HTTPException, UploadFile
 import aiofiles
 import uuid
+import shutil
 
 
 BASEDIR = os.path.dirname(__file__)
@@ -10,8 +11,9 @@ BASEDIR = os.path.dirname(__file__)
 async def handle_file_upload(id: int, file: UploadFile) -> str:
     _, ext = os.path.splitext(file.filename)
     img_dir = os.path.join(BASEDIR, 'statics/media/', str(id))
-    if not os.path.exists(img_dir):
-        os.makedirs(img_dir)
+    if os.path.exists(img_dir):
+        shutil.rmtree(img_dir)
+    os.makedirs(img_dir)
     content = await file.read()
     if file.content_type not in ['image/jpeg', 'image/png']:
         raise HTTPException(status_code=406, detail="Only .jpeg or .png  files allowed")
