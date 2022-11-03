@@ -43,7 +43,7 @@
 
 ## Запуск проекта
 
-uvicorn app.main:app --reload
+```uvicorn app.main:app --reload```
 
 ## Работа с docker
 
@@ -61,4 +61,5 @@ uvicorn app.main:app --reload
 
 
 Команда для создания файла models.py
+
 ```sqlacodegen mysql+pymysql://root:admin@127.0.0.1:3306/mydb > app/models.py```

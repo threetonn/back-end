@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, PastDate
+from pydantic import BaseModel, EmailStr, PastDate, HttpUrl
 
 
 class RefreshToken(BaseModel):
@@ -29,6 +29,7 @@ class ClientCreate(UserBase):
 
 class UserOut(UserBase):
     id: int
+    image: HttpUrl | None = None
     Role_id: int
     Gender_id: int
 

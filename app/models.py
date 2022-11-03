@@ -1,9 +1,18 @@
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String, Boolean, Table, Text
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Integer, String, Table, Text, text
 from sqlalchemy.orm import relationship
 from .database import Base
 
 
 metadata = Base.metadata
+
+
+class Feature(Base):
+    __tablename__ = 'features'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(45), nullable=False)
+
+    Subscriptions = relationship('Subscription', secondary='subscription_has_features')
 
 
 class Gender(Base):
@@ -17,8 +26,8 @@ class Gym(Base):
     __tablename__ = 'gym'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(45))
-    address = Column(String(45))
+    name = Column(String(45), nullable=False)
+    address = Column(String(45), nullable=False)
 
 
 class Role(Base):
@@ -34,27 +43,37 @@ class Subscriptionduration(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(45), nullable=False)
     day_count = Column(Integer, nullable=False)
+    price = Column(Float(asdecimal=True), nullable=False)
+
+
+class Subscriptiontype(Base):
+    __tablename__ = 'subscriptiontype'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(45), nullable=False)
+    type = Column(String(45), nullable=False)
 
 
 class Workouttype(Base):
     __tablename__ = 'workouttype'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(45))
-    description = Column(Text)
+    name = Column(String(45), nullable=False)
+    description = Column(Text, nullable=False)
+    image = Column(String(), nullable=True)
 
 
 class Subscription(Base):
     __tablename__ = 'subscription'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(45), nullable=False)
     description = Column(Text)
-    price = Column(Float(asdecimal=True), nullable=False)
-    is_active = Column(Boolean, nullable=False)
+    is_active = Column(Boolean, nullable=False, server_default=text("'1'"))
     SubscriptionDuration_id = Column(ForeignKey('subscriptionduration.id'), nullable=False, index=True)
+    SubscriptionType_id = Column(ForeignKey('subscriptiontype.id'), nullable=False, index=True)
 
     SubscriptionDuration = relationship('Subscriptionduration')
+    SubscriptionType = relationship('Subscriptiontype')
     WorkoutTypes = relationship('Workouttype', secondary='workouttype_has_subscription')
 
 
@@ -68,13 +87,30 @@ class User(Base):
     birthday = Column(DateTime, nullable=False)
     email = Column(String(45), nullable=False, unique=True)
     phone = Column(String(45), nullable=False, unique=True)
-    password = Column(String(128), nullable=False)
+    password = Column(String(256), nullable=False)
     Gender_id = Column(ForeignKey('gender.id'), nullable=False, index=True)
     Role_id = Column(ForeignKey('role.id'), nullable=False, index=True)
+    image = Column(String(), nullable=True)
+    bio = Column(Text, nullable=True)
 
     Gender = relationship('Gender')
     Role = relationship('Role')
+    WorkoutTypes = relationship('Workouttype', secondary='user_has_workouttype')
     Workouts = relationship('Workout', secondary='workout_has_user')
+
+
+t_subscription_has_features = Table(
+    'subscription_has_features', metadata,
+    Column('Subscription_id', ForeignKey('subscription.id'), primary_key=True, nullable=False, index=True),
+    Column('Features_id', ForeignKey('features.id'), primary_key=True, nullable=False, index=True)
+)
+
+
+t_user_has_workouttype = Table(
+    'user_has_workouttype', metadata,
+    Column('User_id', ForeignKey('user.id'), primary_key=True, nullable=False, index=True),
+    Column('WorkoutType_id', ForeignKey('workouttype.id'), primary_key=True, nullable=False, index=True)
+)
 
 
 class Usersubscription(Base):

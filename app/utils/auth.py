@@ -24,7 +24,7 @@ def create_user(db: Session, user: ClientCreate):
         phone = user.phone,
         password = hashed_password,
         Gender_id = 1 if user.gender == 'male' else 2,
-        Role_id = db.query(Role.id).filter(Role.name == "Клиент").first()[0]
+        Role_id = db.query(Role.id).filter(Role.name == "client").first()[0]
     )
     db.add(db_user)
     db.commit()
