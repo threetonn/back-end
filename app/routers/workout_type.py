@@ -7,10 +7,9 @@ from app.schemas.workout_type import WorkoutTypeBase
 
 router = APIRouter(
     tags=["Workout type"],
-    prefix="/workouttype",
 )
 
 
-@router.get('/', response_model=list[WorkoutTypeBase])
+@router.get('/workouttype', response_model=list[WorkoutTypeBase])
 def get_workouttype(db: Session = Depends(get_db)):
     return get_workout_type(db=db)
