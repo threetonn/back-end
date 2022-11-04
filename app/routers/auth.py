@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Security
-from app.models import User
 from app.utils.auth import get_user_by_email, create_user
-from app.permissions import get_current_user
 from app.schemas.auth import ClientCreate, Login, UserOut, RefreshToken, SignIn
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.auth_class import Auth
