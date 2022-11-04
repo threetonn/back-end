@@ -1,5 +1,6 @@
+from fastapi import HTTPException
 from app.models import Workout, User, Workouttype, Gym
-from app.schemas.workout import WorkoutAdd
+from app.schemas.workout import WorkoutAdd, WorkoutEdit
 from sqlalchemy.orm import Session
 
 def get_workout_out(db: Session, workout):
@@ -16,6 +17,14 @@ def get_workout(db: Session):
     
     return workouts
 
+
+def get_workout_by_id(id: int, db: Session):
+    workout = db.query(Workout).filter(Workout.id == id).first()
+    if workout is None:
+        raise HTTPException(status_code=404, detail="Workout not found")
+    return workout
+
+
 def post_workout(db: Session, workout: WorkoutAdd):
     db_workout = Workout(
         name = workout.name,
@@ -30,3 +39,22 @@ def post_workout(db: Session, workout: WorkoutAdd):
     db.refresh(db_workout)
     get_workout_out(db, db_workout)
     return db_workout
+
+
+def edit_workout(id: int, db: Session, workout: WorkoutEdit):
+    db_workout = get_workout_by_id(id, db = db)
+    edited_workout = workout.dict()
+    for i in edited_workout:
+        if edited_workout[i]:
+            setattr(db_workout, i, edited_workout[i])
+    db.add(db_workout)
+    db.commit()
+    db.refresh(db_workout)
+    get_workout_out(db, db_workout)
+    return db_workout
+
+def delete_workout(id: int, db: Session):
+    db_workout = get_workout_by_id(id, db = db)
+    db.delete(db_workout)
+    db.commit()
+    return {"response": f"Workout { id } deleted!"}
