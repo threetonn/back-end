@@ -1,37 +1,32 @@
 from fastapi import FastAPI
-from app.database import database
+from app.routers import auth, profiles, role, gender, example, workout_type
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+import os
+
+
+BASEDIR = os.path.dirname(__file__)
 
 
 app = FastAPI()
 
-@app.on_event("startup")
-async def startup():
-    '''Установка соединения с БД'''
-    await database.connect()
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+app.include_router(auth.router)
 
-@app.on_event("shutdown")
-async def shutdown():
-    '''Разрыв соединения с БД'''
-    await database.disconnect()
+app.include_router(profiles.router)
 
+app.include_router(role.router)
+app.include_router(gender.router)
+app.include_router(workout_type.router)
 
-@app.post('/signup')
-def signup():
-    return 'Sign up endpoint'
+app.include_router(example.router)
 
-@app.post('/login')
-def login():
-    return 'Login user endpoint'
-
-@app.get('/refresh_token')
-def refresh_token():
-    return 'New token'
-
-@app.post('/secret')
-def secret_data():
-    return 'Secret data'
-
-@app.get('/notsecret')
-def not_secret_data():
-    return 'Not secret data'
+app.mount("/static", StaticFiles(directory=BASEDIR + "/statics"), name="static")
