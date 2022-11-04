@@ -46,7 +46,17 @@ def edit_workout(id: int, db: Session, workout: WorkoutEdit):
     edited_workout = workout.dict()
     for i in edited_workout:
         if edited_workout[i]:
-            setattr(db_workout, i, edited_workout[i])
+            if i == "workout_type":
+                workout_type_id = db.query(Workouttype.id).filter(Workouttype.name == edited_workout[i]).first()[0]
+                setattr(db_workout, "WorkoutType_id", workout_type_id)
+            elif i == "gym":
+                gym_id = db.query(Gym.id).filter(Gym.name == edited_workout[i]).first()[0]
+                setattr(db_workout, "Gym_id", gym_id)
+            elif i == "trainer":
+                trainer_id = db.query(User.id).filter(User.email == edited_workout[i]).first()[0]
+                setattr(db_workout, "Trainer", trainer_id)
+            else:
+                setattr(db_workout, i, edited_workout[i])
     db.add(db_workout)
     db.commit()
     db.refresh(db_workout)
