@@ -25,6 +25,10 @@ def get_workout_by_id(id: int, db: Session):
     return workout
 
 
+# def get_personal_workout(db: Session, user: User):
+#     personal_workout = db.query(Workout).filter(Workout.)
+
+
 def post_workout(db: Session, workout: WorkoutAdd):
     db_workout = Workout(
         name = workout.name,
@@ -33,6 +37,22 @@ def post_workout(db: Session, workout: WorkoutAdd):
         WorkoutType_id = db.query(Workouttype.id).filter(Workouttype.name == workout.workout_type).first()[0],
         Gym_id = db.query(Gym.id).filter(Gym.name == workout.gym).first()[0],
         Trainer = db.query(User.id).filter(User.email == workout.trainer).first()[0]
+    )
+    db.add(db_workout)
+    db.commit()
+    db.refresh(db_workout)
+    get_workout_out(db, db_workout)
+    return db_workout
+
+
+def post_personal_workout(db: Session, workout: WorkoutAdd, user: User):
+    db_workout = Workout(
+        name = workout.name,
+        start_date = workout.start_date,
+        end_date = workout.end_date,
+        WorkoutType_id = db.query(Workouttype.id).filter(Workouttype.name == "Персональная").first()[0],
+        Gym_id = db.query(Gym.id).filter(Gym.name == workout.gym).first()[0],
+        Trainer = user.id
     )
     db.add(db_workout)
     db.commit()

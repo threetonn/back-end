@@ -28,6 +28,11 @@ class WorkoutAdd(BaseModel):
     gym: str
     trainer: EmailStr
 
+class PersonalWorkoutAdd(BaseModel):
+    name: str
+    start_date: datetime
+    end_date: datetime
+    gym: str
 
 class WorkoutEdit(BaseModel):
     name: str | None
