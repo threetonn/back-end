@@ -62,6 +62,8 @@ class Workouttype(Base):
     description = Column(Text, nullable=False)
     image = Column(String(), nullable=True)
 
+    Trainers = relationship('User', secondary='user_has_workouttype', back_populates='WorkoutTypes')
+
 
 class Subscription(Base):
     __tablename__ = 'subscription'
@@ -95,7 +97,7 @@ class User(Base):
 
     Gender = relationship('Gender')
     Role = relationship('Role')
-    WorkoutTypes = relationship('Workouttype', secondary='user_has_workouttype')
+    WorkoutTypes = relationship('Workouttype', secondary='user_has_workouttype', back_populates='Trainers')
     Workouts = relationship('Workout', secondary='workout_has_user')
 
 
