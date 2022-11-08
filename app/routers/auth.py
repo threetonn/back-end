@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Security
 from app.utils.auth import get_user_by_email, create_user
 from app.schemas.auth import ClientCreate, Login, UserOut, RefreshToken, SignIn
+from app.schemas.profiles import ClientBase
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from app.auth_class import Auth
 from app.database import get_db
@@ -15,7 +16,7 @@ router = APIRouter(
 )
 
 
-@router.post('/signup', response_model=UserOut)
+@router.post('/signup', response_model=ClientBase)
 def signup(user: ClientCreate, db: Session = Depends(get_db)):
     """ Регистрация пользователя (клиента) """
     db_user = get_user_by_email(db, email=user.email)
