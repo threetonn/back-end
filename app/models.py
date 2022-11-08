@@ -88,7 +88,7 @@ class User(Base):
     patronymic = Column(String(45))
     birthday = Column(DateTime, nullable=False)
     email = Column(String(45), nullable=False, unique=True)
-    phone = Column(String(45), nullable=False, unique=True)
+    phone = Column(String(45), nullable=False)
     password = Column(String(256), nullable=False)
     Gender_id = Column(ForeignKey('gender.id'), nullable=False, index=True)
     Role_id = Column(ForeignKey('role.id'), nullable=False, index=True)
