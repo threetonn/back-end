@@ -140,6 +140,7 @@ class Workout(Base):
     end_date = Column(DateTime, nullable=False)
     Gym_id = Column(ForeignKey('gym.id'), nullable=False, index=True)
 
+    Clients = relationship('User', secondary='workout_has_user', back_populates='Workouts')
     Gym = relationship('Gym')
     user = relationship('User')
     WorkoutType = relationship('Workouttype')
