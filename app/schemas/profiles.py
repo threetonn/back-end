@@ -47,4 +47,4 @@ class EditUser(BaseModel):
 
 class EditTrainer(EditUser):
     bio: str | None = None
-    workout_type: list[int] | None = None
+    workout_type: list[str] | None = None

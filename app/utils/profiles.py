@@ -43,7 +43,7 @@ def edit_trainer_profile(db: Session, user: User, new_data: EditTrainer):
             elif i == "gender":
                 setattr(user, 'Gender_id', 1 if modified_user[i] == 'male' else 2)
             elif i == "workout_type":
-                workout_types = db.query(Workouttype).filter(Workouttype.id.in_(modified_user[i])).all()
+                workout_types = db.query(Workouttype).filter(Workouttype.name.in_(modified_user[i])).all()
                 user.WorkoutTypes = workout_types
             else:
                 setattr(user, i, modified_user[i])
