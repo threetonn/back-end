@@ -14,13 +14,13 @@ router = APIRouter(
 )
 
 
-@router.post('/add_image', response_model=ClientBase)
+@router.post('/add_image', response_model=TrainerBase | ClientBase)
 async def add_image(db: Session = Depends(get_db), image: UploadFile = File(...), user: User = Security(get_current_user)):
     user.image = await handle_file_upload(id=user.id, file=image)
     db.add(user)
     db.commit()
     db.refresh(user)
-    return get_user_profile(user)
+    return get_trainer_profile(user) if user.Role.name == "trainer" else get_user_profile(user)
 
 
 @router.get('/me', response_model=TrainerBase | ClientBase)
