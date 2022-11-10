@@ -52,3 +52,10 @@ def is_manager(user: User = Depends(get_current_user)):
 def is_admin(user: User = Depends(get_current_user)):
     """ Проверяет является ли пользователь администратором """
     return get_role(user, "admin")
+
+
+def is_not_client(user: User = Depends(get_current_user)):
+    """ Проверяет если пользователь не является клиентом """
+    if user.Role.name == "client":
+        raise HTTPException(status_code=403, detail='Forbidden')
+    return user
