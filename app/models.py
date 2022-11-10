@@ -62,6 +62,8 @@ class Workouttype(Base):
     description = Column(Text, nullable=False)
     image = Column(String(), nullable=True)
 
+    Trainers = relationship('User', secondary='user_has_workouttype', back_populates='WorkoutTypes')
+
 
 class Subscription(Base):
     __tablename__ = 'subscription'
@@ -86,7 +88,7 @@ class User(Base):
     patronymic = Column(String(45))
     birthday = Column(DateTime, nullable=False)
     email = Column(String(45), nullable=False, unique=True)
-    phone = Column(String(45), nullable=False, unique=True)
+    phone = Column(String(45), nullable=False)
     password = Column(String(256), nullable=False)
     Gender_id = Column(ForeignKey('gender.id'), nullable=False, index=True)
     Role_id = Column(ForeignKey('role.id'), nullable=False, index=True)
@@ -95,7 +97,7 @@ class User(Base):
 
     Gender = relationship('Gender')
     Role = relationship('Role')
-    WorkoutTypes = relationship('Workouttype', secondary='user_has_workouttype')
+    WorkoutTypes = relationship('Workouttype', secondary='user_has_workouttype', back_populates='Trainers')
     Workouts = relationship('Workout', secondary='workout_has_user')
 
 
@@ -138,6 +140,7 @@ class Workout(Base):
     end_date = Column(DateTime, nullable=False)
     Gym_id = Column(ForeignKey('gym.id'), nullable=False, index=True)
 
+    Clients = relationship('User', secondary='workout_has_user', back_populates='Workouts')
     Gym = relationship('Gym')
     user = relationship('User')
     WorkoutType = relationship('Workouttype')

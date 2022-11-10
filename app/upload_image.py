@@ -20,5 +20,5 @@ async def handle_file_upload(id: int, file: UploadFile) -> str:
     file_name = f'{uuid.uuid4().hex}{ext}'
     async with aiofiles.open(os.path.join(img_dir, file_name), mode='wb') as f:
         await f.write(content)
-    url = f"http://127.0.0.1:8000/static/media/{id}/{file_name}"
+    url = f"http://172.28.31.169:8000/static/media/{id}/{file_name}"
     return url

@@ -29,4 +29,5 @@ def create_user(db: Session, user: ClientCreate):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
+    db_user.gender = db_user.Gender.name
     return db_user
