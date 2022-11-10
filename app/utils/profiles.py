@@ -7,14 +7,19 @@ from app.auth_class import Auth
 auth_handler = Auth()
 
 
-def get_trainer_profile(user: User):
-    user.gender = user.Gender.name
-    user.workout_type = user.WorkoutTypes
+def get_user_profile(user: User):
+    user.role = user.Role.name
+    user.gender = {
+        "ru": "Мужчина" if user.Gender.name == "male" else "Женщина",
+        "en": user.Gender.name
+    }
     return user
 
 
-def get_user_profile(user: User):
-    user.gender = user.Gender.name
+def get_trainer_profile(user: User):
+    user = get_user_profile(user)
+    user.bio = user.bio if user.bio else "О себе..."
+    user.workout_type = user.WorkoutTypes
     return user
 
 

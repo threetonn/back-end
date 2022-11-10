@@ -1,6 +1,12 @@
 from pydantic import BaseModel, EmailStr, PastDate
 
 
+class Gender(BaseModel):
+    """ Информация о гендере """
+    ru: str
+    en: str
+
+
 class ClientBase(BaseModel):
     """ Информация в профиле клиента """
     name: str
@@ -9,7 +15,8 @@ class ClientBase(BaseModel):
     birthday: PastDate
     email: EmailStr
     phone: str
-    gender: str
+    gender: Gender
+    role: str
     image: str | None = None
 
     class Config:

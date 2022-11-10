@@ -20,8 +20,7 @@ async def add_image(db: Session = Depends(get_db), image: UploadFile = File(...)
     db.add(user)
     db.commit()
     db.refresh(user)
-    user.gender = user.Gender.name
-    return user
+    return get_user_profile(user)
 
 
 @router.get('/me', response_model=TrainerBase | ClientBase)
@@ -39,4 +38,3 @@ def edit_profile(new_data: EditTrainer | EditUser, db: Session = Depends(get_db)
     else: 
         user = edit_user_profile(db, user, new_data)
         return get_user_profile(user)
-    
