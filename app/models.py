@@ -76,6 +76,7 @@ class Subscription(Base):
     SubscriptionDuration = relationship('Subscriptionduration')
     SubscriptionType = relationship('Subscriptiontype')
     WorkoutTypes = relationship('Workouttype', secondary='workouttype_has_subscription')
+    Features = relationship("Feature", secondary="subscription_has_features")
 
 
 class User(Base):
