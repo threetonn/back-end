@@ -12,7 +12,7 @@ class Feature(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(45), nullable=False)
 
-    Subscriptions = relationship('Subscription', secondary='subscription_has_features')
+    Subscriptions = relationship('Subscription', secondary='subscription_has_features', back_populates='Features')
 
 
 class Gender(Base):
@@ -76,7 +76,7 @@ class Subscription(Base):
     SubscriptionDuration = relationship('Subscriptionduration')
     SubscriptionType = relationship('Subscriptiontype')
     WorkoutTypes = relationship('Workouttype', secondary='workouttype_has_subscription')
-    Features = relationship("Feature", secondary="subscription_has_features")
+    Features = relationship("Feature", secondary="subscription_has_features", back_populates='Subscriptions')
 
 
 class User(Base):
