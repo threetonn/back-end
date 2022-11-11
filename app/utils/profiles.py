@@ -2,12 +2,17 @@ from app.models import User, Workouttype
 from sqlalchemy.orm import Session
 from app.schemas.profiles import EditUser, EditTrainer
 from app.auth_class import Auth
+from os import environ
 
+
+APP_HOST = environ.get("APP_HOST")
+APP_PORT = environ.get("APP_PORT")
 
 auth_handler = Auth()
 
 
 def get_user_profile(user: User):
+    user.image = f"http://{ APP_HOST }:{ APP_PORT }{ user.image }"
     user.role = user.Role.name
     user.gender = {
         "ru": "Мужчина" if user.Gender.name == "male" else "Женщина",
