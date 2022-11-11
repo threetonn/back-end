@@ -41,8 +41,7 @@ class Subscriptionduration(Base):
     __tablename__ = 'subscriptionduration'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(45), nullable=False)
-    day_count = Column(Integer, nullable=False)
+    discount = Column(Float(asdecimal=True), nullable=False)
     price = Column(Float(asdecimal=True), nullable=False)
 
 
@@ -124,7 +123,7 @@ class Usersubscription(Base):
     end_date = Column(DateTime, nullable=False)
     User_id = Column(ForeignKey('user.id'), nullable=False, index=True)
     Subscription_id = Column(ForeignKey('subscription.id'), nullable=False, index=True)
-
+    day_count = Column(Integer, nullable=False)
     Subscription = relationship('Subscription')
     User = relationship('User')
 
