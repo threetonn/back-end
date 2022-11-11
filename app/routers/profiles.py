@@ -24,10 +24,10 @@ async def add_image(db: Session = Depends(get_db), image: UploadFile = File(...)
 
 
 @router.get('/me', response_model=TrainerBase | ClientBase)
-def profile(user: User = Security(get_current_user)):
+def profile(user: User = Security(get_current_user), db: Session = Depends(get_db)):
     if user.Role.name == "trainer":
         return get_trainer_profile(user)
-    return get_user_profile(user)
+    return get_user_profile(user=user, db=db)
 
 
 @router.put('/edit', response_model=TrainerBase | ClientBase)
