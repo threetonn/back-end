@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import auth, profiles, role, gender, example, workout_type, workout, gym, users
+from app.routers import auth, profiles, role, gender, example, workout_type, workout, gym, users, subscription
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
@@ -24,6 +24,8 @@ app.include_router(auth.router)
 app.include_router(profiles.router)
 
 app.include_router(users.router)
+
+app.include_router(subscription.router)
 
 app.include_router(role.router)
 app.include_router(gender.router)
