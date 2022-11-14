@@ -1,16 +1,16 @@
 from fastapi import HTTPException
 from app.models import Workout, User, Workouttype, Gym
-from app.schemas.workout import WorkoutAdd, WorkoutEdit
+from app.schemas.workout import WorkoutBase, WorkoutAdd, WorkoutEdit
 from sqlalchemy.orm import Session
 
 
-def get_workout_out(db: Session, workout):
+def get_workout_out(db: Session, workout: Workout):
     workout.workout_type = workout.WorkoutType.name
     workout.gym = workout.Gym
     trainer = db.query(User).filter(User.id == workout.Trainer).first()
     trainer.gender = trainer.Gender.name
     workout.trainer = trainer
-    return(workout)
+    return workout
 
 
 def get_workout_by_id(id: int, db: Session):
@@ -25,7 +25,7 @@ def get_workout_by_id(id: int, db: Session):
 
 # Получить все групповые тренеровки
 def get_group_workouts(db: Session):
-    workouts = db.query(Workout).filter(Workout.WorkoutType.name != "personal").all() # Сделать по названию для лучшей читаемости
+    workouts = db.query(Workout).join(Workouttype).filter(Workout.WorkoutType_id == Workouttype.id).filter(Workouttype.name != "personal").all()
     for workout in workouts:
         get_workout_out(db, workout)
     return workouts
@@ -34,11 +34,64 @@ def get_group_workouts(db: Session):
 # Получить конкретную групповую тренеровку
 def get_specific_group_workout(id: int, db: Session):
     workout = db.query(Workout).filter(Workout.id == id).first()
-    workout = get_workout_out(db, workout)
-    if workout.WorkoutType.name == "personal": # Поменять id типа на названия для лучшей читаемости
+    if not workout:
+        raise HTTPException(status_code=404)
+    elif workout.WorkoutType.name == "personal":
         raise HTTPException(status_code=403, detail='Forbidden')
+    workout = get_workout_out(db, workout)
     return workout
 
+
+# Получить все тренеровки этого клиента
+def get_all_client_workouts(db: Session, user: User):
+    workouts = [get_workout_out(db, workout) for workout in user.Workouts]
+    return workouts
+
+
+# Вернуть все персональные тренеровки клиента
+def get_personal_client_workouts(db: Session, user: User):
+    workouts = [get_workout_out(db, workout) for workout in user.Workouts 
+                if workout.WorkoutType.name == "personal"]
+    return workouts
+
+
+# Вернуть конкретную персональную тренеровку клиента
+def get_specific_personal_workout(id: int, db: Session, user: User):
+    workouts = [get_workout_out(db, workout) for workout in user.Workouts
+                if workout.id == id and workout.WorkoutType.name == "personal"]
+    if workouts:
+        return workouts[0]
+    raise HTTPException(status_code=404)
+
+
+# Вернуть все групповые тренеровки клиента
+def get_group_client_workouts(db: Session, user: User):
+    workouts = [get_workout_out(db, workout) for workout in user.Workouts 
+                if workout.WorkoutType.name != "personal"]
+    return workouts
+
+
+# Клиент подписываеся на групповую тренеровку
+def post_subscribe_client(id: int, db: Session, user: User):
+    workout = get_workout_by_id(id, db)
+    user.Workouts.append(workout)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return get_group_client_workouts(db, user)
+
+# Клиент отписываеся от групповой тренеровки
+def delete_subscription_client(id: int, db: Session, user: User):
+    workout = get_workout_by_id(id, db)
+    if not workout:
+        raise HTTPException(status_code=404)
+    if not workout in user.Workouts:
+        raise HTTPException(status_code=404)
+    user.Workouts.remove(workout)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return {"response": f"Unsubscribed from { workout.name } workout!"}
 
 
 def post_workout(db: Session, workout: WorkoutAdd, user: User):
