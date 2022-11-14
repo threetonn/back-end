@@ -34,6 +34,4 @@ app.include_router(workout_type.router)
 app.include_router(gym.router)
 app.include_router(workout.router)
 
-app.include_router(example.router)
-
 app.mount("/static", StaticFiles(directory=BASEDIR + "/statics"), name="static")
