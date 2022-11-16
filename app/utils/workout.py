@@ -205,6 +205,19 @@ def post_workout(db: Session, workout: WorkoutAdd, user: User):
     return db_workout
 
 
+# Вывести список всех клиентов подписанных на данную тренеровку, доступно только менеджеру
+def get_all_subscribed_clients(id: int, db: Session, user: User):
+    
+    if not get_workout_by_id(db = db, id = id):
+        raise HTTPException(status_code=404, detail="Workout not found")
+
+    clients = get_workout_by_id(db = db, id = id).Clients
+    
+    if not clients:
+        raise HTTPException(status_code=404, detail="Clients not found")
+    return clients
+
+
 # Менеджер подписывает клиента/клиентов к групповой тренеровке
 def manager_subscribe_client(
     workout_id: int, 

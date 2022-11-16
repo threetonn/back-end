@@ -8,7 +8,8 @@ from app.utils.workout import (
     post_workout, edit_workout, delete_workout,
     post_subscribe_client, delete_subscription_client,
     get_trainer_workouts, get_trainer_personal_workouts, get_trainer_group_workouts,
-    manager_subscribe_client, manager_unsubscribe_client
+    manager_subscribe_client, manager_unsubscribe_client,
+    get_all_subscribed_clients
 )
 from app.schemas.workout import WorkoutBase, WorkoutAdd, WorkoutEdit, PersonalWorkoutAdd
 from app.permissions import is_admin, is_manager, is_trainer, is_client, is_not_client
@@ -156,13 +157,23 @@ async def delete_personal_workout_router(
     return delete_workout(id = id, db = db, user = user)
 
 
+# Получить список клиентов подписанных на данную тренеровку, доступно только менеджеру
+@router.get('/manager/{id}', tags=[Tags.manager])
+async def get_subscribed_clients(
+    id: int, 
+    db: Session = Depends(get_db), 
+    user: User = Security(is_manager)
+):
+    return get_all_subscribed_clients(id = id, db = db, user = user)
+
+
 # Создать новую групповую тренеровку, доступно только менеджеру
 @router.post('/manager/add', response_model=WorkoutBase, tags=[Tags.manager])
 async def post_workout_router(
     workout: WorkoutAdd, 
     db: Session = Depends(get_db), 
     user: User = Security(is_manager)
-    ):
+):
     return post_workout(db = db, workout = workout, user = user)
 
 
@@ -188,7 +199,7 @@ async def delete_group_workout_router(
 
 
 # Менеджер подписывает клиента/ов на групповую тренеровку
-@router.put(
+@router.post(
     '/manager/{workout_id}/subscribe/', 
     status_code=201,
     tags=[Tags.manager]
