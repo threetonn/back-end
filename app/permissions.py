@@ -24,7 +24,7 @@ def get_role(user: User, role: str):
     """ Получение роли пользователя """
     if user.Role.name == role:
         return user
-    raise HTTPException(status_code=403, detail='Forbidden')
+    raise HTTPException(status_code=403, detail='Forbidden, wrong role')
 
 
 # id | name
@@ -57,5 +57,5 @@ def is_admin(user: User = Depends(get_current_user)):
 def is_not_client(user: User = Depends(get_current_user)):
     """ Проверяет если пользователь не является клиентом """
     if user.Role.name == "client":
-        raise HTTPException(status_code=403, detail='Forbidden')
+        raise HTTPException(status_code=403, detail='Forbidden, user is a client')
     return user
