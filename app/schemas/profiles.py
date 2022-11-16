@@ -1,19 +1,32 @@
 from pydantic import BaseModel, EmailStr, PastDate
+from app.schemas.subscription import SubscriptionBase
 
 
-class ClientBase(BaseModel):
+class Gender(BaseModel):
+    """ Информация о гендере """
+    ru: str
+    en: str
+
+
+class UserBase(BaseModel):
     """ Информация в профиле клиента """
     name: str
     surname: str
     patronymic: str | None = None
     birthday: PastDate
-    email: EmailStr
+    email: EmailStr 
     phone: str
-    gender: str
+    gender: Gender
+    role: str
     image: str | None = None
 
     class Config:
         orm_mode = True
+
+
+class ClientBase(UserBase):
+    """ Информация о профиле клиента """
+    subscription: SubscriptionBase
 
 
 class WorkoutType(BaseModel):
@@ -27,7 +40,7 @@ class WorkoutType(BaseModel):
         orm_mode = True
 
 
-class TrainerBase(ClientBase):
+class TrainerBase(UserBase):
     """ Информация о профиле тренера """
     bio: str
     workout_type: list[WorkoutType]

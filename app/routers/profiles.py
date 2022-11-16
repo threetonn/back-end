@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security, UploadFile, File
+from fastapi import APIRouter, Depends, Security, UploadFile, File, Request
 from app.database import get_db
 from sqlalchemy.orm import Session
 from app.permissions import get_current_user
@@ -14,29 +14,39 @@ router = APIRouter(
 )
 
 
-@router.post('/add_image', response_model=ClientBase)
-async def add_image(db: Session = Depends(get_db), image: UploadFile = File(...), user: User = Security(get_current_user)):
+@router.post('/add_image', response_model=TrainerBase | ClientBase)
+async def add_image(
+        request: Request,
+        db: Session = Depends(get_db), 
+        image: UploadFile = File(...), 
+        user: User = Security(get_current_user)
+    ):
     user.image = await handle_file_upload(id=user.id, file=image)
     db.add(user)
     db.commit()
     db.refresh(user)
-    user.gender = user.Gender.name
-    return user
+    if user.Role.name == "trainer":
+        return get_trainer_profile(request, user)  
+    return get_user_profile(request, user=user, db=db)
 
 
 @router.get('/me', response_model=TrainerBase | ClientBase)
-def profile(user: User = Security(get_current_user)):
+def profile(request: Request, user: User = Security(get_current_user), db: Session = Depends(get_db)):
     if user.Role.name == "trainer":
-        return get_trainer_profile(user)
-    return get_user_profile(user)
+        return get_trainer_profile(request, user)
+    return get_user_profile(request, user=user, db=db)
 
 
 @router.put('/edit', response_model=TrainerBase | ClientBase)
-def edit_profile(new_data: EditTrainer | EditUser, db: Session = Depends(get_db), user: User = Security(get_current_user)):
+def edit_profile(
+        request: Request,
+        new_data: EditTrainer | EditUser, 
+        db: Session = Depends(get_db),
+        user: User = Security(get_current_user)
+    ):
     if user.Role.name == "trainer":
         user = edit_trainer_profile(db, user, new_data)
-        return get_trainer_profile(user)
+        return get_trainer_profile(request, user)
     else: 
         user = edit_user_profile(db, user, new_data)
-        return get_user_profile(user)
-    
+        return get_user_profile(request, user=user, db=db)
