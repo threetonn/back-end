@@ -10,6 +10,7 @@ def get_workout_out(db: Session, workout: Workout):
     trainer = db.query(User).filter(User.id == workout.Trainer).first()
     trainer.gender = trainer.Gender.name
     workout.trainer = trainer
+    return workout
 
 
 def get_workout_by_id(id: int, db: Session):
@@ -301,8 +302,8 @@ def delete_workout(id: int, db: Session, user: User):
 
     if not db_workout:
         raise HTTPException(status_code=404)
-    if not workout.WorkoutType.name != "personal" and workout.Trainer == user.id:
-        raise HTTPException(status_code=403, detail="Forbidden, wrong trainer")
+    if workout.WorkoutType.name == "personal" and workout.Trainer != user.id:
+        raise HTTPException(status_code=403, detail="Forbidden, wrong trainer or workout type")
     if not workout.WorkoutType.name == "personal" and user_role == "trainer":
         raise HTTPException(
             status_code=403, 
