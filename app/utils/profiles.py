@@ -1,20 +1,38 @@
-from app.models import User, Workouttype
+from app.models import User, Workouttype, Usersubscription
 from sqlalchemy.orm import Session
 from app.schemas.profiles import EditUser, EditTrainer
 from app.auth_class import Auth
+from datetime import datetime
+from app.utils.subscription import get_subscription_db
 
 
 auth_handler = Auth()
 
 
-def get_trainer_profile(user: User):
-    user.gender = user.Gender.name
-    user.workout_type = user.WorkoutTypes
+def get_user_profile(request, user: User, db: Session):
+    subscriptions = db.query(Usersubscription).filter(Usersubscription.User_id == user.id).all()
+    for i in subscriptions:
+        if i.start_date <= datetime.now() <= i.end_date:
+            user.subscription = get_subscription_db(db=db, id=i.Subscription_id)
+            break
+    user.image = f"http://{ request.url.hostname }:{ request.url.port }{ user.image }" if user.image else None
+    user.role = user.Role.name
+    user.gender = {
+        "ru": "Мужчина" if user.Gender.name == "male" else "Женщина",
+        "en": user.Gender.name
+    }
     return user
 
 
-def get_user_profile(user: User):
-    user.gender = user.Gender.name
+def get_trainer_profile(request, user: User):
+    user.image = f"http://{ request.url.hostname }:{ request.url.port }{ user.image }" if user.image else None
+    user.role = user.Role.name
+    user.gender = {
+        "ru": "Мужчина" if user.Gender.name == "male" else "Женщина",
+        "en": user.Gender.name
+    }
+    user.bio = user.bio if user.bio else "О себе..."
+    user.workout_type = user.WorkoutTypes
     return user
 
 

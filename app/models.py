@@ -12,7 +12,7 @@ class Feature(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(45), nullable=False)
 
-    Subscriptions = relationship('Subscription', secondary='subscription_has_features')
+    Subscriptions = relationship('Subscription', secondary='subscription_has_features', back_populates='Features')
 
 
 class Gender(Base):
@@ -41,8 +41,7 @@ class Subscriptionduration(Base):
     __tablename__ = 'subscriptionduration'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(45), nullable=False)
-    day_count = Column(Integer, nullable=False)
+    discount = Column(Float(asdecimal=True), nullable=False)
     price = Column(Float(asdecimal=True), nullable=False)
 
 
@@ -77,6 +76,7 @@ class Subscription(Base):
     SubscriptionDuration = relationship('Subscriptionduration')
     SubscriptionType = relationship('Subscriptiontype')
     WorkoutTypes = relationship('Workouttype', secondary='workouttype_has_subscription')
+    Features = relationship("Feature", secondary="subscription_has_features", back_populates='Subscriptions')
 
 
 class User(Base):
@@ -124,7 +124,7 @@ class Usersubscription(Base):
     end_date = Column(DateTime, nullable=False)
     User_id = Column(ForeignKey('user.id'), nullable=False, index=True)
     Subscription_id = Column(ForeignKey('subscription.id'), nullable=False, index=True)
-
+    day_count = Column(Integer, nullable=False)
     Subscription = relationship('Subscription')
     User = relationship('User')
 
@@ -157,4 +157,21 @@ t_workout_has_user = Table(
     'workout_has_user', metadata,
     Column('Workout_id', ForeignKey('workout.id'), primary_key=True, nullable=False, index=True),
     Column('User_id', ForeignKey('user.id'), primary_key=True, nullable=False, index=True)
+)
+
+
+class Route(Base):
+    __tablename__ = 'route'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(45), nullable=True)
+    route = Column(String(45), nullable=False)
+
+    roles = relationship('Role', secondary='route_has_role')
+
+
+t_route_has_role = Table(
+    'route_has_role', metadata,
+    Column('Route_id', ForeignKey('route.id'), primary_key=True, nullable=False, index=True),
+    Column('Role_id', ForeignKey('role.id'), primary_key=True, nullable=False, index=True)
 )
