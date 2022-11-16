@@ -164,6 +164,7 @@ class Route(Base):
     __tablename__ = 'route'
 
     id = Column(Integer, primary_key=True)
+    name = Column(String(45), nullable=True)
     route = Column(String(45), nullable=False)
 
     roles = relationship('Role', secondary='route_has_role')
