@@ -158,3 +158,19 @@ t_workout_has_user = Table(
     Column('Workout_id', ForeignKey('workout.id'), primary_key=True, nullable=False, index=True),
     Column('User_id', ForeignKey('user.id'), primary_key=True, nullable=False, index=True)
 )
+
+
+class Route(Base):
+    __tablename__ = 'route'
+
+    id = Column(Integer, primary_key=True)
+    route = Column(String(45), nullable=False)
+
+    roles = relationship('Role', secondary='route_has_role')
+
+
+t_route_has_role = Table(
+    'route_has_role', metadata,
+    Column('Route_id', ForeignKey('route.id'), primary_key=True, nullable=False, index=True),
+    Column('Role_id', ForeignKey('role.id'), primary_key=True, nullable=False, index=True)
+)
