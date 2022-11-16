@@ -233,17 +233,13 @@ def manager_subscribe_client(
     if workout.WorkoutType.name == "personal":
         raise HTTPException(status_code=403, detail="Forbidden, workout is personal")
     
-    client_list = [
-        db.query(User).filter(User.id == client).first()
-        for client in client_list_id
-        if client
-    ]
-    
-    for client in client_list:
-        client.Workouts.append(workout)
-        db.add(client)
-        db.commit()
-        db.refresh(client)
+    for client in client_list_id:
+        client = db.query(User).filter(User.id == client).first()
+        if client:
+            client.Workouts.append(workout)
+            db.add(client)
+            db.commit()
+            db.refresh(client)
 
 
 # Менеджер подписывает клиента/ов от групповой тренеровки
