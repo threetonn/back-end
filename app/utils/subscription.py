@@ -1,6 +1,7 @@
-from app.models import Subscription, Feature, Workouttype
-from sqlalchemy.orm import Session, aliased
+from app.models import Subscription, Feature, Workouttype, Usersubscription, User
+from sqlalchemy.orm import Session
 from fastapi import HTTPException
+from datetime import datetime
 
 
 def add_a_field(subscription: Subscription):
@@ -20,7 +21,7 @@ def get_subscriptions_db(db: Session):
     return subscriptions
 
 def get_subscription_db(db: Session, id: int):
-    """ Возвращает текущую подписку польователя """
+    """ Возвращает конкретную подписку """
     subscription = db.query(Subscription).filter(Subscription.is_active).filter(Subscription.id == id).first()
     if subscription:
         return add_a_field(subscription=subscription)
@@ -33,3 +34,11 @@ def get_features_db(db: Session):
     workouttypes_db = db.query(Workouttype.id, Workouttype.description).all()
     workouttypes = [ {"id": i[0], "name": i[1], "type": "workouttypes"} for i in workouttypes_db ]
     return features + workouttypes
+
+def get_subscribe_user(user: User, db: Session):
+    user_subscriptions = db.query(Usersubscription).filter(Usersubscription.User_id == user.id).all()
+    for i in user_subscriptions:
+        i.is_acting = False
+        if i.start_date <= datetime.now() <= i.end_date:
+            i.is_acting = True
+    return user_subscriptions
