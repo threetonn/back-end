@@ -33,183 +33,184 @@ class Tags(Enum):
     manager = router + "manager"
 
 
-# Все групповые тренеровки, доступно всем
 @router.get('/group', response_model=list[WorkoutBase], tags=[Tags.all])
 async def get_workout_router(db: Session = Depends(get_db)):
+    """ Получить все групповые тренеровки, доступно всем """
     return get_group_workouts(db = db)
 
 
-# Конкретная групповая тренеровка, доступно всем
 @router.get('/group/{id}', response_model=WorkoutBase, tags=[Tags.all])
 async def get_workout_router(id: int, db: Session = Depends(get_db)):
+    """ Получить конкретную групповую тренеровку, доступно всем """
     return get_specific_group_workout(id = id, db = db)
 
 
-# Все тренеровки клиента
 @router.get('/client/me', response_model=list[WorkoutBase], tags=[Tags.client])
 async def get_client_workouts(db: Session = Depends(get_db), user: User = Security(is_client)):
+    """ Получить все тренеровки клиента """
     return get_all_client_workouts(db = db, user = user)
 
 
-# Все персональные тренеровки клиента
 @router.get('/client/me/personal', response_model=list[WorkoutBase], tags=[Tags.client])
 async def get_client_personal_workouts(
     db: Session = Depends(get_db), 
     user: User = Security(is_client)
-    ):
+):
+    """ Получить все персональные тренеровки клиента """
     return get_personal_client_workouts(db = db, user = user)
 
 
-# Клиент подписывается на групповую тренеровку
 @router.post('/group/{id}/subscribe', response_model=list[WorkoutBase], tags=[Tags.client])
 async def post_client_subscribe(
     id: int, 
     db: Session = Depends(get_db), 
     user: User = Security(is_client)
-    ):
+):
+    """ Клиент подписывается на групповую тренеровку """
     return post_subscribe_client(id = id, db = db, user = user)
 
 
-# Клиент отписывается от групповой тренеровки
 @router.delete('/group/{id}/unsubscribe', status_code=202, tags=[Tags.client])
 async def post_client_unsubscribe(
     id: int, 
     db: Session = Depends(get_db), 
     user: User = Security(is_client)
-    ):
+):
+    """ Клиент отписывается от групповой тренеровки """
     return delete_subscription_client(id = id, db = db, user = user)
 
 
-# Все групповые тренеровки клиента
 @router.get('/client/me/group', response_model=list[WorkoutBase], tags=[Tags.client])
 async def get_client_personal_workouts(
     db: Session = Depends(get_db), 
     user: User = Security(is_client)
-    ):
+):
+    """ Получить все групповые тренеровки клиента """
     return get_group_client_workouts(db = db, user = user)
 
 
-# Конеретная персональная тренеровка клиента
 @router.get('/personal/{id}', response_model=WorkoutBase, tags=[Tags.client])
 async def get_client_personal_workouts(
     id: int, 
     db: Session = Depends(get_db), 
     user: User = Security(is_client)
-    ):
+):
+    """ Получить конеретную персональную тренеровку клиента """
     return get_specific_personal_workout(id = id, db = db, user = user)
 
 
-# Посмотреть все тренеровки которые ведет тренер
 @router.get('/trainer/me', response_model=list[WorkoutBase], tags=[Tags.trainer])
 async def get_all_trainer_workouts(
     db: Session = Depends(get_db), 
     user: User = Security(is_trainer)
-    ):
+):
+    """ Посмотреть все тренеровки которые ведет тренер """
     return get_trainer_workouts(db = db, user = user)
 
 
-# Посмотреть все персональные тренеровки которые ведет тренер
 @router.get('/trainer/me/personal', response_model=list[WorkoutBase], tags=[Tags.trainer])
 async def get_personal_trainer_workouts(
     db: Session = Depends(get_db), 
     user: User = Security(is_trainer)
-    ):
+):
+    """ Посмотреть все персональные тренеровки которые ведет тренер """
     return get_trainer_personal_workouts(db = db, user = user)
 
 
-# Посмотреть все групповые тренеровки которые ведет тренер
 @router.get('/trainer/me/group', response_model=list[WorkoutBase], tags=[Tags.trainer])
 async def get_group_trainer_workouts(
     db: Session = Depends(get_db), 
     user: User = Security(is_trainer)
-    ):
+):
+    """ Посмотреть все групповые тренеровки которые ведет тренер """
     return get_trainer_group_workouts(db = db, user = user)
 
 
-# Создать новую персональную тренеровку, доступно только тренеру
 @router.post('/trainer/personal/add', response_model=WorkoutBase, tags=[Tags.trainer])
 async def post_personal_workout_router(
     workout: PersonalWorkoutAdd, 
     db: Session = Depends(get_db), 
     user: User = Security(is_trainer)
-    ):
+):
+    """ Создать новую персональную тренеровку, доступно только тренеру """
     return post_workout(db = db, workout = workout, user = user)
 
 
-# Изменить персональную тренеровку, доступно только тренеру к которому она относиться
 @router.put('/trainer/{id}/edit', response_model=WorkoutBase, tags=[Tags.trainer])
 async def edit_personal_workout_router(
     id:int, 
     workout: WorkoutEdit, 
     db: Session = Depends(get_db), 
     user: User = Security(is_trainer)
-    ):
+):
+    """ Изменить персональную тренеровку, 
+    доступно только тренеру к которому она относиться """
     return edit_workout(id = id, workout = workout, db = db, user = user)
 
 
-# Удалить персональную тренеровку, доступно только тренеру к которому она относиться
 @router.delete('/trainer/{id}/delete', tags=[Tags.trainer])
 async def delete_personal_workout_router(
     id:int, 
     db: Session = Depends(get_db), 
     user: User = Security(is_trainer)
-    ):
+):
+    """ Удалить персональную тренеровку, 
+    доступно только тренеру к которому она относиться """
     return delete_workout(id = id, db = db, user = user)
 
 
-# Получить список клиентов подписанных на данную тренеровку, доступно только менеджеру
 @router.get('/manager/{id}', tags=[Tags.manager])
 async def get_subscribed_clients(
     id: int, 
     db: Session = Depends(get_db), 
     user: User = Security(is_manager)
 ):
+    """ Получить список клиентов подписанных на данную групповую тренеровку, 
+    доступно только менеджеру """
     return get_all_subscribed_clients(id = id, db = db, user = user)
 
 
-# Создать новую групповую тренеровку, доступно только менеджеру
 @router.post('/manager/add', response_model=WorkoutBase, tags=[Tags.manager])
 async def post_workout_router(
     workout: WorkoutAdd, 
     db: Session = Depends(get_db), 
     user: User = Security(is_manager)
 ):
+    """ Создать новую групповую тренеровку, доступно только менеджеру """
     return post_workout(db = db, workout = workout, user = user)
 
 
-# Изменить групповую тренеровку, доступно только менеджеру
 @router.put('/manager/{id}/edit', response_model=WorkoutBase, tags=[Tags.manager])
 async def edit_group_workout_router(
     id:int, 
     workout: WorkoutEdit, 
     db: Session = Depends(get_db), 
     user: User = Security(is_manager)
-    ):
+):
+    """ Изменить групповую тренеровку, доступно только менеджеру """
     return edit_workout(id = id, workout = workout, db = db, user = user)
 
 
-# Удалить существующую тренеровку, доступно всем зарегистрированным пользователям кроме клиента
 @router.delete('/manager/{id}/delete', status_code=202, tags=[Tags.manager])
 async def delete_group_workout_router(
     id:int, 
     db: Session = Depends(get_db), 
     user: User = Security(is_manager)
-    ):
+):
+    """ Удалить существующую групповую тренеровку, 
+    доступно только менеджеру """
     return delete_workout(id = id, db = db, user = user)
 
 
-# Менеджер подписывает клиента/ов на групповую тренеровку
-@router.post(
-    '/manager/{workout_id}/subscribe/', 
-    status_code=201,
-    tags=[Tags.manager]
-    )
+@router.post('/manager/{workout_id}/subscribe/', status_code=201, tags=[Tags.manager])
 async def subscribe_client_to_workout(
     workout_id: int, 
     client_list_id:list[int], 
     db:Session = Depends(get_db), 
     user: User = Security(is_manager)
 ):
+    """ Менеджер подписывает одного или
+     нескольких клиентов на групповую тренеровку """
     return manager_subscribe_client(
         workout_id = workout_id, 
         client_list_id = client_list_id, 
@@ -218,18 +219,15 @@ async def subscribe_client_to_workout(
     )
 
 
-# Менеджер отписывает клиента/ов от групповую тренеровку
-@router.delete(
-    '/manager/{workout_id}/unsubscribe/', 
-    status_code=202,
-    tags=[Tags.manager]
-)
+@router.delete('/manager/{workout_id}/unsubscribe/', status_code=202, tags=[Tags.manager])
 async def unsubscribe_client_from_workout(
     workout_id: int, 
     client_list_id:list[int], 
     db:Session = Depends(get_db), 
     user: User = Security(is_manager)
 ):
+    """ Менеджер отписывает одного или
+    нескольких клиентов от групповой тренеровки """
     return manager_unsubscribe_client(
         workout_id = workout_id, 
         client_list_id = client_list_id, 
@@ -238,30 +236,24 @@ async def unsubscribe_client_from_workout(
     )
 
 
-# Изменить существующую тренеровку, доступно всем зарегистрированным пользователям кроме клиента
-@router.put(
-    '/edit/{id}', 
-    response_model=WorkoutBase, 
-    tags=[Tags.all_except_client]
-)
+@router.put('/edit/{id}', response_model=WorkoutBase, tags=[Tags.all_except_client])
 async def edit_workout_router(
     id:int, 
     workout: WorkoutEdit, 
     db: Session = Depends(get_db), 
     user: User = Security(is_not_client)
 ):
+    """ Изменить существующую тренеровку, 
+    доступно всем зарегистрированным пользователям кроме клиента """
     return edit_workout(id = id, workout = workout, db = db, user = user)
 
 
-# Удалить существующую тренеровку, доступно всем зарегистрированным пользователям кроме клиента
-@router.delete(
-    '/delete/{id}', 
-    status_code=202, 
-    tags=[Tags.all_except_client]
-)
+@router.delete('/delete/{id}', status_code=202, tags=[Tags.all_except_client])
 async def delete_workout_router(
     id:int, 
     db: Session = Depends(get_db), 
     user: User = Security(is_not_client)
 ):
+    """ Удалить существующую тренеровку, 
+    доступно всем зарегистрированным пользователям кроме клиента """
     return delete_workout(id = id, db = db)
