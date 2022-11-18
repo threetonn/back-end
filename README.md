@@ -45,6 +45,11 @@
 
 ```uvicorn app.main:app --reload```
 
+
+Отключение uvicorn сервера на ubuntu:
+
+```ctrl + \```
+
 ## Работа с docker
 
 Остановка базы данных:
