@@ -43,6 +43,18 @@ class WorkoutEdit(BaseModel):
     trainer: EmailStr | None
 
 
+class WorkoutAdd(BaseModel):
+    name: str
+    start_date: datetime
+    end_date: int
+    workout_type: str
+    gym: str
+    trainer: EmailStr
+
+    class Config:
+        orm_mode = True
+
+
 class WorkoutBase(BaseModel):
     name: str
     start_date: datetime

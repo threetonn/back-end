@@ -23,8 +23,8 @@ def get_workout_by_id(id: int, db: Session):
     return workout
 
 
-# Пройтись по полям тренеровки, изменить их и вернуть результат
 def edit_workout_conditions(id: int, db: Session, workout: WorkoutEdit):
+    """ Пройтись по полям тренеровки, изменить их и вернуть результат """
     db_workout = get_workout_by_id(id, db = db)
     edited_workout = workout.dict()
     
@@ -69,8 +69,8 @@ def check_subscription(db, user, workout):
 # Start of the main functions
 
 
-# Получить все групповые тренеровки
 def get_group_workouts(db: Session):
+    """ Получить все групповые тренеровки """
     workouts = db.query(Workout).join(Workouttype).filter(
         Workout.WorkoutType_id == Workouttype.id
         ).filter(
@@ -84,8 +84,8 @@ def get_group_workouts(db: Session):
     return workouts
 
 
-# Получить конкретную групповую тренеровку
 def get_specific_group_workout(id: int, db: Session):
+    """ Получить конкретную групповую тренеровку """
     workout = db.query(Workout).filter(Workout.id == id).first()
     
     if not workout:
@@ -99,16 +99,16 @@ def get_specific_group_workout(id: int, db: Session):
     return workout
 
 
-# Получить все тренеровки этого клиента
 def get_all_client_workouts(db: Session, user: User):
+    """ Получить все тренеровки этого клиента """
     workouts = [get_workout_out(db, workout) for workout in user.Workouts]
     if not workouts:
         raise HTTPException(status_code=404)
     return workouts
 
 
-# Вернуть все персональные тренеровки клиента
 def get_personal_client_workouts(db: Session, user: User):  
+    """ Вернуть все персональные тренеровки клиента """
     workouts = [get_workout_out(db, workout) for workout in user.Workouts 
                 if workout.WorkoutType.name == "personal"]
     if not workouts:
@@ -116,8 +116,8 @@ def get_personal_client_workouts(db: Session, user: User):
     return workouts
 
 
-# Вернуть конкретную персональную тренеровку клиента
 def get_specific_personal_workout(id: int, db: Session, user: User):
+    """ Вернуть конкретную персональную тренеровку клиента """
     workouts = [get_workout_out(db, workout) for workout in user.Workouts
                 if workout.id == id and workout.WorkoutType.name == "personal"]
     if workouts:
@@ -125,8 +125,8 @@ def get_specific_personal_workout(id: int, db: Session, user: User):
     raise HTTPException(status_code=404)
 
 
-# Вернуть все групповые тренеровки клиента
 def get_group_client_workouts(db: Session, user: User):
+    """ Вернуть все групповые тренеровки клиента """
     workouts = [get_workout_out(db, workout) for workout in user.Workouts 
                 if workout.WorkoutType.name != "personal"]
     if not workouts:
@@ -134,8 +134,8 @@ def get_group_client_workouts(db: Session, user: User):
     return workouts
 
 
-# Клиент подписываеся на групповую тренеровку
 def post_subscribe_client(id: int, db: Session, user: User):
+    """ Клиент подписываеся на групповую тренеровку """
     workout = get_workout_by_id(id, db)
 
     if check_subscription(db = db, user = user, workout = workout) is not True:
@@ -150,8 +150,9 @@ def post_subscribe_client(id: int, db: Session, user: User):
     db.refresh(user)
     return get_group_client_workouts(db, user)
 
-# Клиент отписываеся от групповой тренеровки
+
 def delete_subscription_client(id: int, db: Session, user: User):
+    """ Клиент отписываеся от групповой тренеровки """
     workout = get_workout_by_id(id, db)
     
     if not workout:
@@ -166,8 +167,8 @@ def delete_subscription_client(id: int, db: Session, user: User):
     return {"response": f"Unsubscribed from { workout.name } workout!"}
 
 
-# Вернуть все тренеровки котоые ведет этот тренер
 def get_trainer_workouts(db: Session, user: User):
+    """ Вернуть все тренеровки котоые ведет этот тренер """
     workouts = [get_workout_out(db, workout) 
                 for workout 
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()]
@@ -176,8 +177,8 @@ def get_trainer_workouts(db: Session, user: User):
     return workouts
 
 
-# Вернуть все персональные тренеровки которые ведер этот тренер
 def get_trainer_personal_workouts(db: Session, user: User):
+    """ Вернуть все персональные тренеровки которые ведер этот тренер """
     workouts = [get_workout_out(db, workout)
                 for workout
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()
@@ -187,8 +188,8 @@ def get_trainer_personal_workouts(db: Session, user: User):
     return workouts
 
 
-# Вернуть все групповые тренеровки которые ведет этот тренер
 def get_trainer_group_workouts(db: Session, user: User):
+    """ Вернуть все групповые тренеровки которые ведет этот тренер """
     workouts = [get_workout_out(db, workout)
                 for workout
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()
@@ -198,10 +199,10 @@ def get_trainer_group_workouts(db: Session, user: User):
     return workouts
 
 
-# Создать перональную или групповую тренеровку, доступно тренеру и менеджеру
-# Тренер может только создать персональную тренеровку
-# Менеджер может создать только групповую тренеровку
 def post_workout(db: Session, workout: WorkoutAdd, user: User):
+    """ Создать перональную или групповую тренеровку, доступно тренеру и менеджеру
+        Тренер может только создать персональную тренеровку
+        Менеджер может создать только групповую тренеровку """
     user_role = user.Role.name
     if not db.query(Gym.id).filter(Gym.name == workout.gym).first():
         raise HTTPException(status_code=404, detail="Gym not found")
@@ -225,15 +226,17 @@ def post_workout(db: Session, workout: WorkoutAdd, user: User):
     if not db_workout:
         raise HTTPException(status_code=404)
     
-    db.add(db_workout)
-    db.commit()
-    db.refresh(db_workout)
+    print("Success!!!")
+    # db.add(db_workout)
+    # db.commit()
+    # db.refresh(db_workout)
     get_workout_out(db, db_workout)
     return db_workout
 
 
-# Вывести список всех клиентов подписанных на данную тренеровку, доступно только менеджеру
 def get_all_subscribed_clients(id: int, db: Session, user: User):
+    """ Вывести список всех клиентов подписанных на данную тренеровку, 
+        доступно только менеджеру """
     
     if not get_workout_by_id(db = db, id = id):
         raise HTTPException(status_code=404, detail="Workout not found")
@@ -245,13 +248,13 @@ def get_all_subscribed_clients(id: int, db: Session, user: User):
     return clients
 
 
-# Менеджер подписывает клиента/клиентов к групповой тренеровке
 def manager_subscribe_client(
     workout_id: int, 
     client_list_id: list[int], 
     db: Session, 
     user: User
 ):
+    """ Менеджер подписывает клиента/клиентов к групповой тренеровке """
     workout = get_workout_by_id(workout_id, db)
 
     if not workout:
@@ -279,13 +282,13 @@ def manager_subscribe_client(
             db.refresh(client)
 
 
-# Менеджер отписывает клиента/ов от групповой тренеровки
 def manager_unsubscribe_client(
     workout_id: int, 
     client_list_id: list[int], 
     db: Session, 
     user: User
 ):
+    """ Менеджер отписывает клиента/ов от групповой тренеровки """
     workout = get_workout_by_id(workout_id, db)
 
     if not workout:
@@ -305,10 +308,11 @@ def manager_unsubscribe_client(
         db.commit()
 
 
-
-# Изменить тренеровку, персональную для тренера или групповую для мереджера, только одно из двух
-# Доступно только тренеру и менеджеру
 def edit_workout(id: int, db: Session, workout: WorkoutEdit, user: User):
+    """ Изменить тренеровку, 
+        персональную для тренера или групповую для мереджера, 
+        только одно из двух.
+        Доступно только тренеру и менеджеру """
     user_role = user.Role.name
     workoutType = get_workout_by_id(id, db = db).WorkoutType.name
     
@@ -326,9 +330,10 @@ def edit_workout(id: int, db: Session, workout: WorkoutEdit, user: User):
     return db_workout
 
 
-# Удалить персональную тренеровку - для тенера ИЛИ удалить групповую тренеровку - для мереджера
-# ТОЛЬКО одно из двух
 def delete_workout(id: int, db: Session, user: User):
+    """ Удалить персональную тренеровку - для тенера 
+        ИЛИ удалить групповую тренеровку - для мереджера
+        ТОЛЬКО одно из двух """
     user_role = user.Role.name
     db_workout = get_workout_by_id(id, db = db)
     workout = get_workout_out(db, db_workout)
