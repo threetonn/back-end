@@ -1,7 +1,8 @@
 from app.models import Subscription, Feature, Workouttype, Usersubscription, User
+from app.schemas.subscription import Subscribe
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from datetime import datetime
+from datetime import datetime, timedelta
 
 
 def add_a_field(subscription: Subscription):
@@ -35,10 +36,35 @@ def get_features_db(db: Session):
     workouttypes = [ {"id": i[0], "name": i[1], "type": "workouttypes"} for i in workouttypes_db ]
     return features + workouttypes
 
+
 def get_subscribe_user(user: User, db: Session):
     user_subscriptions = db.query(Usersubscription).filter(Usersubscription.User_id == user.id).all()
     for i in user_subscriptions:
-        i.is_acting = False
-        if i.start_date <= datetime.now() <= i.end_date:
-            i.is_acting = True
+        i.subscription = add_a_field(subscription=i.Subscription)
+        i.is_acting = True if i.start_date <= datetime.now() <= i.end_date else False
     return user_subscriptions
+
+
+def check_date_subscribtions(start_date):
+    return
+
+
+def subscribe_db(user: User, data: Subscribe, subscriptions_id:int, db: Session):
+    subscriptions = db.query(Subscription).filter(Subscription.id == subscriptions_id).first()
+    if not subscriptions:
+        raise HTTPException(status_code=404, detail="Subscription is not found")
+    if data.day_count > 365:
+        raise HTTPException(status_code=400, detail="Subscription is only possible for a year (365 days)")
+    
+    user_subscription = Usersubscription(
+        date_of_purchase = datetime.now(),
+        start_date = data.start_date,
+        end_date = data.start_date + timedelta(data.day_count),
+        day_count = data.day_count,
+        User_id = user.id,
+        Subscription_id = subscriptions_id
+    )
+    db.add(user_subscription)
+    db.commit()
+    db.refresh(user_subscription)
+    return get_subscribe_user(user=user, db=db)
