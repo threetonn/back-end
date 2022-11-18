@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from app.models import Workout, User, Workouttype, Gym
 from app.schemas.workout import WorkoutBase, WorkoutAdd, WorkoutEdit
+from app.utils.subscription import get_subscribe_user
 from sqlalchemy.orm import Session, joinedload
 
 
@@ -117,12 +118,27 @@ def get_group_client_workouts(db: Session, user: User):
 
 # Клиент подписываеся на групповую тренеровку
 def post_subscribe_client(id: int, db: Session, user: User):
+    client_subscription = get_subscribe_user(db = db, user = user)
     workout = get_workout_by_id(id, db)
-    user.Workouts.append(workout)
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return get_group_client_workouts(db, user)
+
+    for subscription in client_subscription:
+        if subscription.is_acting is not True:
+            raise HTTPException(
+                status_code=403, 
+                detail="Forbidden, subscription is not active!"
+            )
+        subscription_workouttypes = subscription.Subscription.WorkoutTypes
+        for workouttype in subscription_workouttypes:
+            if workouttype.id != workout.WorkoutType.id:
+                raise HTTPException(
+                    status_code=403, 
+                    detail="Forbidden, subscription doesn't allow this workout type"
+                )
+            user.Workouts.append(workout)
+            db.add(user)
+            db.commit()
+            db.refresh(user)
+            return get_group_client_workouts(db, user)
 
 # Клиент отписываеся от групповой тренеровки
 def delete_subscription_client(id: int, db: Session, user: User):
