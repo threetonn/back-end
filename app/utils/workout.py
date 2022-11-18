@@ -48,6 +48,24 @@ def edit_workout_conditions(id: int, db: Session, workout: WorkoutEdit):
     return db_workout
 
 
+def check_subscription(db, user, workout):
+    client_subscription = get_subscribe_user(db = db, user = user)
+    for subscription in client_subscription:
+        if subscription.is_acting is not True:
+            raise HTTPException(
+                status_code=403, 
+                detail="Forbidden, subscription is not active!"
+            )
+        subscription_workouttypes = subscription.Subscription.WorkoutTypes
+        for workouttype in subscription_workouttypes:
+            if workouttype.id != workout.WorkoutType.id:
+                raise HTTPException(
+                    status_code=403, 
+                    detail="Forbidden, subscription doesn't allow this workout type"
+                )
+            return True
+
+
 # Start of the main functions
 
 
@@ -118,27 +136,19 @@ def get_group_client_workouts(db: Session, user: User):
 
 # Клиент подписываеся на групповую тренеровку
 def post_subscribe_client(id: int, db: Session, user: User):
-    client_subscription = get_subscribe_user(db = db, user = user)
     workout = get_workout_by_id(id, db)
 
-    for subscription in client_subscription:
-        if subscription.is_acting is not True:
-            raise HTTPException(
-                status_code=403, 
-                detail="Forbidden, subscription is not active!"
+    if check_subscription(db = db, user = user, workout = workout) is not True:
+        raise HTTPException(
+            status_code=403, 
+            detail="Forbidden, failed subscription check"
             )
-        subscription_workouttypes = subscription.Subscription.WorkoutTypes
-        for workouttype in subscription_workouttypes:
-            if workouttype.id != workout.WorkoutType.id:
-                raise HTTPException(
-                    status_code=403, 
-                    detail="Forbidden, subscription doesn't allow this workout type"
-                )
-            user.Workouts.append(workout)
-            db.add(user)
-            db.commit()
-            db.refresh(user)
-            return get_group_client_workouts(db, user)
+    
+    user.Workouts.append(workout)
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return get_group_client_workouts(db, user)
 
 # Клиент отписываеся от групповой тренеровки
 def delete_subscription_client(id: int, db: Session, user: User):
@@ -249,9 +259,20 @@ def manager_subscribe_client(
     if workout.WorkoutType.name == "personal":
         raise HTTPException(status_code=403, detail="Forbidden, workout is personal")
     
+    if check_subscription(db = db, user = user, workout = workout) is not True:
+        raise HTTPException(
+            status_code=403, 
+            detail="Forbidden, failed subscription check"
+            )
+    
     for client in client_list_id:
         client = db.query(User).filter(User.id == client).first()
         if client:
+            if check_subscription(db = db, user = user, workout = workout) is not True:
+                raise HTTPException(
+                    status_code=403, 
+                    detail="Forbidden, failed subscription check"
+                    )
             client.Workouts.append(workout)
             db.add(client)
             db.commit()
