@@ -1,4 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, FutureDate
+from datetime import date
+
+
+class Subscribe(BaseModel):
+    start_date: FutureDate
+    day_count: int
+
+
 
 class SubscriptionBase(BaseModel):
     id: int
@@ -7,6 +15,18 @@ class SubscriptionBase(BaseModel):
     discount: float
     price: float
     features: list[str]
+
+    class Config:
+        orm_mode = True
+
+
+class UserSubscription(BaseModel):
+    date_of_purchase: date
+    start_date: date
+    end_date: date
+    day_count: int
+    subscription: SubscriptionBase
+    is_acting: bool
 
     class Config:
         orm_mode = True
