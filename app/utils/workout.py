@@ -279,7 +279,7 @@ def manager_subscribe_client(
             db.refresh(client)
 
 
-# Менеджер подписывает клиента/ов от групповой тренеровки
+# Менеджер отписывает клиента/ов от групповой тренеровки
 def manager_unsubscribe_client(
     workout_id: int, 
     client_list_id: list[int], 
