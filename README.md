@@ -13,6 +13,11 @@
 ```pipenv shell```
 
 ## Инициализация базы данных PostgreSQL
+
+Создание файла db.sql для инициализации БД
+
+```pg_dump -h localhost -p 8005 -U root -F p -f db.sql fitnessclub3tons```
+
 Запуск контейнера базы данных:
 
 ```docker compose up -d```
@@ -24,7 +29,6 @@
 > **Password:** ```root```
 
 > **fitnessclub3tons=#** ```exit``` -->
-
 
 ## Подключение автоматизированной миграции БД
 

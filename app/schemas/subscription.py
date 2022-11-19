@@ -3,7 +3,7 @@ from datetime import date
 
 
 class Subscribe(BaseModel):
-    start_date: FutureDate
+    start_date: date
     day_count: int
 
 
