@@ -23,10 +23,6 @@
 
 > **Password:** ```root```
 
-> **fitnessclub3tons=#** ```CREATE EXTENSION IF NOT EXISTS "uuid-ossp";```
-
-> **CREATE EXTENSION**
-
 > **fitnessclub3tons=#** ```exit``` -->
 
 
