@@ -26,7 +26,7 @@ class UserBase(BaseModel):
 
 class ClientBase(UserBase):
     """ Информация о профиле клиента """
-    subscription: SubscriptionBase
+    subscription: SubscriptionBase | None = None
 
 
 class WorkoutType(BaseModel):

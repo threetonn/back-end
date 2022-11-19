@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, Depends, HTTPException, Security, Request
 from app.utils.auth import get_user_by_email, create_user
+from app.utils.profiles import get_user_profile
 from app.schemas.auth import ClientCreate, Login, UserOut, RefreshToken, SignIn
 from app.schemas.profiles import ClientBase
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -17,12 +18,13 @@ router = APIRouter(
 
 
 @router.post('/signup', response_model=ClientBase)
-def signup(user: ClientCreate, db: Session = Depends(get_db)):
+def signup(request: Request, user: ClientCreate, db: Session = Depends(get_db)):
     """ Регистрация пользователя (клиента) """
     db_user = get_user_by_email(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Email already registered")
-    return create_user(db=db, user=user)
+    db_user = create_user(db=db, user=user)
+    return get_user_profile(request, user=db_user, db=db)
 
 
 @router.post('/signin', response_model=SignIn)
