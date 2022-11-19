@@ -126,7 +126,7 @@ async def get_group_trainer_workouts(
     return get_trainer_group_workouts(db = db, user = user)
 
 
-@router.post('/trainer/personal/add', response_model=WorkoutBase, tags=[Tags.trainer])
+@router.post('/trainer/personal/add', response_model=WorkoutAdd, tags=[Tags.trainer])
 async def post_personal_workout_router(
     workout: PersonalWorkoutAdd, 
     db: Session = Depends(get_db), 
@@ -170,7 +170,7 @@ async def get_subscribed_clients(
     return get_all_subscribed_clients(id = id, db = db, user = user)
 
 
-@router.post('/manager/add', response_model=WorkoutBase, tags=[Tags.manager])
+@router.post('/manager/add', response_model=WorkoutAdd, tags=[Tags.manager])
 async def post_workout_router(
     workout: WorkoutAdd, 
     db: Session = Depends(get_db), 

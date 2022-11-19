@@ -23,10 +23,6 @@
 
 > **Password:** ```root```
 
-> **fitnessclub3tons=#** ```CREATE EXTENSION IF NOT EXISTS "uuid-ossp";```
-
-> **CREATE EXTENSION**
-
 > **fitnessclub3tons=#** ```exit``` -->
 
 
@@ -44,6 +40,11 @@
 ## Запуск проекта
 
 ```uvicorn app.main:app --reload```
+
+
+Отключение uvicorn сервера на ubuntu:
+
+```ctrl + \```
 
 ## Работа с docker
 
