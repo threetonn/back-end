@@ -29,22 +29,27 @@ def edit_workout_conditions(id: int, db: Session, workout: WorkoutEdit):
     db_workout = get_workout_by_id(id, db = db)
     edited_workout = workout.dict()
     
-    for i in edited_workout:
-        if not edited_workout[i]:
+    for workout in edited_workout:
+        if not edited_workout[workout]:
             continue
-        if i == "workout_type":
+        if workout == "workout_type":
             workout_type_id = db\
                 .query(Workouttype.id)\
-                .filter(Workouttype.name == edited_workout[i])\
+                .filter(Workouttype.name == edited_workout[workout])\
                 .first()[0]
             setattr(db_workout, "WorkoutType_id", workout_type_id)
-        if i == "gym":
-            gym_id = db.query(Gym.id).filter(Gym.name == edited_workout[i]).first()[0]
+        if workout == "gym":
+            gym_id = db.query(Gym.id)\
+                .filter(Gym.name == edited_workout[workout]).first()[0]
             setattr(db_workout, "Gym_id", gym_id)
-        if i == "trainer":
-            trainer_id = db.query(User.id).filter(User.email == edited_workout[i]).first()[0]
-            setattr(db_workout, "Trainer", trainer_id)
-        setattr(db_workout, i, edited_workout[i])
+        if workout == "trainer":
+            trainer_id = db.query(User)\
+                .filter(User.email == edited_workout[workout]).first()
+            user_role = trainer_id.Role.name
+            if user_role != "trainer":
+                raise HTTPException(status_code=403, detail="User must be a trainer")
+            setattr(db_workout, "Trainer", trainer_id.id)
+        setattr(db_workout, workout, edited_workout[workout])
     
     return db_workout
 
@@ -223,19 +228,21 @@ def post_workout(db: Session, workout: WorkoutAdd, user: User):
         end_date = workout.end_date,
         Gym_id = db.query(Gym.id).filter(Gym.name == workout.gym).first()[0]
     )
-    
-    if user_role == "manager":
+
+    if user_role == "manager" and workout.workout_type != "personal":
         db_workout.WorkoutType_id = db.query(Workouttype.id)\
             .filter(Workouttype.name == workout.workout_type)\
             .first()[0]
         db_workout.Trainer = db.query(User.id)\
             .filter(User.email == workout.trainer)\
             .first()[0]
-    elif user_role == "trainer":
+    elif user_role == "trainer" and workout.workout_type == "personal":
         db_workout.WorkoutType_id = db.query(Workouttype.id)\
             .filter(Workouttype.name == "personal")\
             .first()[0]
         db_workout.Trainer = user.id
+    else:
+        raise HTTPException(status_code=403, detail="Wrong role or workout type")
     
     if not db_workout:
         raise HTTPException(status_code=404)
@@ -344,7 +351,7 @@ def delete_workout(id: int, db: Session, user: User):
     """ Удалить персональную тренеровку - для тенера 
         ИЛИ удалить групповую тренеровку - для мереджера
         ТОЛЬКО одно из двух """
-        
+
     user_role = user.Role.name
     db_workout = get_workout_by_id(id, db = db)
     workout = get_workout_out(db, db_workout)
