@@ -12,6 +12,21 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
       - ./db.sql:/docker-entrypoint-initdb.d/db.sql
+  backend:
+    depends_on:
+      - db
+    build: .
+    command: bash -c "uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+    restart: always
+    ports:
+      - 8000:8000
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - APP_SECRET_STRING=${APP_SECRET_STRING}
 
 volumes:
   db:
