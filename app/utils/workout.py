@@ -280,11 +280,6 @@ def manager_subscribe_client(
     if workout.WorkoutType.name == "personal":
         raise HTTPException(status_code=403, detail="Forbidden, workout is personal")
     
-    if check_subscription(db = db, user = user, workout = workout) is not True:
-        raise HTTPException(
-            status_code=403, 
-            detail="Forbidden, failed subscription check"
-            )
     
     for client in client_list_id:
         client = db.query(User).filter(User.id == client).first()
@@ -299,6 +294,7 @@ def manager_subscribe_client(
         db.add(client)
         db.commit()
         db.refresh(client)
+    return {f"Client(s) have been subscribed to { workout.name } workout"}
 
 
 def manager_unsubscribe_client(
