@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from app.models import Workout, User, Workouttype, Gym
+from app.models import Workout, User, Workouttype, Gym, Usersubscription
 from app.schemas.workout import WorkoutBase, WorkoutAdd, WorkoutEdit
 from app.utils.subscription import get_subscribe_user
 from sqlalchemy.orm import Session, joinedload
@@ -18,7 +18,7 @@ def get_workout_by_id(id: int, db: Session):
     """ Вытащить из базы данных тренеровку по id """
 
     workout = db.query(Workout).filter(Workout.id == id).first()
-    if workout is None:
+    if not workout:
         raise HTTPException(status_code=404, detail="Workout not found")
     return workout
 
@@ -40,11 +40,13 @@ def edit_workout_conditions(id: int, db: Session, workout: WorkoutEdit):
             setattr(db_workout, "WorkoutType_id", workout_type_id)
         if workout == "gym":
             gym_id = db.query(Gym.id)\
-                .filter(Gym.name == edited_workout[workout]).first()[0]
+                .filter(Gym.name == edited_workout[workout])\
+                .first()[0]
             setattr(db_workout, "Gym_id", gym_id)
         if workout == "trainer":
             trainer_id = db.query(User)\
-                .filter(User.email == edited_workout[workout]).first()
+                .filter(User.email == edited_workout[workout])\
+                .first()
             user_role = trainer_id.Role.name
             if user_role != "trainer":
                 raise HTTPException(status_code=403, detail="User must be a trainer")
@@ -87,7 +89,7 @@ def get_group_workouts(db: Session):
     
     [get_workout_out(db, workout) for workout in workouts]
     if not workouts:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Workouts not found")
     
     return workouts
 
@@ -109,37 +111,41 @@ def get_all_client_workouts(db: Session, user: User):
 
     workouts = [get_workout_out(db, workout) for workout in user.Workouts]
     if not workouts:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Client has no workouts")
     return workouts
 
 
 def get_personal_client_workouts(db: Session, user: User):  
     """ Вернуть все персональные тренеровки клиента """
 
-    workouts = [get_workout_out(db, workout) for workout in user.Workouts 
+    workouts = [get_workout_out(db, workout) 
+                for workout in user.Workouts 
                 if workout.WorkoutType.name == "personal"]
     if not workouts:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="User has no personal workouts")
     return workouts
 
 
 def get_specific_personal_workout(id: int, db: Session, user: User):
     """ Вернуть конкретную персональную тренеровку клиента """
 
-    workouts = [get_workout_out(db, workout) for workout in user.Workouts
-                if workout.id == id and workout.WorkoutType.name == "personal"]
+    workouts = [get_workout_out(db, workout) 
+                for workout in user.Workouts
+                if workout.id == id 
+                and workout.WorkoutType.name == "personal"]
     if workouts:
         return workouts[0]
-    raise HTTPException(status_code=404)
+    raise HTTPException(status_code=404, detail="Personal workout not found")
 
 
 def get_group_client_workouts(db: Session, user: User):
     """ Вернуть все групповые тренеровки клиента """
 
-    workouts = [get_workout_out(db, workout) for workout in user.Workouts 
+    workouts = [get_workout_out(db, workout) 
+                for workout in user.Workouts 
                 if workout.WorkoutType.name != "personal"]
     if not workouts:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Workouts not found")
     return workouts
 
 
@@ -148,12 +154,15 @@ def post_subscribe_client(id: int, db: Session, user: User):
 
     workout = get_workout_by_id(id, db)
 
+    if not db.query(Usersubscription).filter(Usersubscription.User_id == user.id).all():
+        raise HTTPException(status_code=404, detail="Client has not subscriptions")
     if check_subscription(db = db, user = user, workout = workout) is not True:
         raise HTTPException(
             status_code=403, 
             detail="Forbidden, failed subscription check"
             )
-    
+    if user.Role.name != "client":
+        raise HTTPException(status_code=403, detail="Forbidden, only client can subscribe")
     user.Workouts.append(workout)
     db.add(user)
     db.commit()
@@ -179,13 +188,13 @@ def delete_subscription_client(id: int, db: Session, user: User):
 
 
 def get_trainer_workouts(db: Session, user: User):
-    """ Вернуть все тренеровки котоые ведет этот тренер """
+    """ Вернуть все тренеровки которые ведет этот тренер """
 
     workouts = [get_workout_out(db, workout) 
                 for workout 
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()]
     if not workouts:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Trainer has no workouts")
     return workouts
 
 
@@ -197,7 +206,7 @@ def get_trainer_personal_workouts(db: Session, user: User):
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()
                 if workout.WorkoutType.name == "personal"]
     if not workouts:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Trainer has no personal workouts")
     return workouts
 
 
@@ -209,7 +218,7 @@ def get_trainer_group_workouts(db: Session, user: User):
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()
                 if workout.WorkoutType.name != "personal"]
     if not workouts:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Trainer has no group workouts")
     return workouts
 
 
@@ -247,12 +256,10 @@ def post_workout(db: Session, workout: WorkoutAdd, user: User):
     if not db_workout:
         raise HTTPException(status_code=404)
     
-    print("Success!!!")
     db.add(db_workout)
     db.commit()
     db.refresh(db_workout)
-    get_workout_out(db, db_workout)
-    return db_workout
+    return get_workout_out(db, db_workout)
 
 
 def get_all_subscribed_clients(id: int, db: Session, user: User):
@@ -279,8 +286,9 @@ def manager_subscribe_client(
         raise HTTPException(status_code=404, detail="Workout not found")
     if workout.WorkoutType.name == "personal":
         raise HTTPException(status_code=403, detail="Forbidden, workout is personal")
-    
-    
+    if not db.query(Usersubscription).filter(Usersubscription.User_id == user.id).all():
+        raise HTTPException(status_code=404, detail="Client has not subscriptions")
+
     for client in client_list_id:
         client = db.query(User).filter(User.id == client).first()
         if not client:
@@ -335,7 +343,10 @@ def edit_workout(id: int, db: Session, workout: WorkoutEdit, user: User):
     elif user_role == "manager" and workoutType != "personal":
         db_workout = edit_workout_conditions(id, db = db, workout = workout)
     else:
-        raise HTTPException(status_code=403, detail='Forbidden, wrong user role or workout type')    
+        raise HTTPException(
+            status_code=403, 
+            detail='Forbidden, wrong user role or workout type'
+        )
     
     db.add(db_workout)
     db.commit()
@@ -353,15 +364,15 @@ def delete_workout(id: int, db: Session, user: User):
     workout = get_workout_out(db, db_workout)
 
     if not db_workout:
-        raise HTTPException(status_code=404)
+        raise HTTPException(status_code=404, detail="Workout not found")
     if workout.WorkoutType.name == "personal" and workout.Trainer != user.id:
         raise HTTPException(status_code=403, detail="Forbidden, wrong trainer or workout type")
-    if not workout.WorkoutType.name == "personal" and user_role == "trainer":
+    if workout.WorkoutType.name != "personal" and user_role != "trainer":
         raise HTTPException(
             status_code=403, 
             detail="Forbidden, not trainer or not personal workout"
             )
-    if not workout.WorkoutType.name != "personal" and user_role == "manager":
+    if workout.WorkoutType.name == "personal" and user_role != "manager":
         raise HTTPException(
             status_code=403, 
             detail="Forbidden, user is not a manager or is personal workout"
