@@ -626,9 +626,6 @@ COPY public.alembic_version (version_num) FROM stdin;
 --
 
 COPY public.features (id, name) FROM stdin;
-1	полотенце
-2	тапки
-3	массаж
 \.
 
 
@@ -647,9 +644,6 @@ COPY public.gender (id, name) FROM stdin;
 --
 
 COPY public.gym (id, name, address) FROM stdin;
-1	test1	test1
-2	test2	test2
-3	test3	test3
 \.
 
 
@@ -686,8 +680,6 @@ COPY public.route_has_role ("Route_id", "Role_id") FROM stdin;
 --
 
 COPY public.subscription (id, description, is_active, "SubscriptionDuration_id", "SubscriptionType_id") FROM stdin;
-1	Базовый абонемент	t	1	1
-2	Расширенный абонемент	t	2	2
 \.
 
 
@@ -696,11 +688,6 @@ COPY public.subscription (id, description, is_active, "SubscriptionDuration_id",
 --
 
 COPY public.subscription_has_features ("Subscription_id", "Features_id") FROM stdin;
-1	1
-1	2
-2	1
-2	2
-2	3
 \.
 
 
@@ -709,8 +696,6 @@ COPY public.subscription_has_features ("Subscription_id", "Features_id") FROM st
 --
 
 COPY public.subscriptionduration (id, price, discount) FROM stdin;
-1	60	0.05
-2	80	0.05
 \.
 
 
@@ -719,8 +704,6 @@ COPY public.subscriptionduration (id, price, discount) FROM stdin;
 --
 
 COPY public.subscriptiontype (id, name, type) FROM stdin;
-1	basic	Базовый
-2	extended	Расширенный
 \.
 
 
@@ -729,7 +712,6 @@ COPY public.subscriptiontype (id, name, type) FROM stdin;
 --
 
 COPY public."user" (id, name, surname, patronymic, birthday, email, phone, password, "Gender_id", "Role_id", image, bio) FROM stdin;
-2	Кирилл	Скачков	\N	1999-02-21 00:00:00	user@example.com	89115927291	$2b$12$2w010ZYyC8/BR5RLMedJUOD7wBEbK4mwjfEoo0sPcVX5aVlJmC8PC	1	1	/static/media/2/cf49e4ed19d74c5baa6861991fb18a92.png	\N
 \.
 
 
@@ -746,8 +728,6 @@ COPY public.user_has_workouttype ("User_id", "WorkoutType_id") FROM stdin;
 --
 
 COPY public.usersubscription (id, date_of_purchase, start_date, end_date, "User_id", "Subscription_id", day_count) FROM stdin;
-1	2022-11-21 12:58:01.439517	2022-11-21 00:00:00	2022-12-21 00:00:00	2	1	30
-3	2022-11-21 13:02:42.998183	2022-12-22 00:00:00	2023-01-21 00:00:00	2	2	30
 \.
 
 
@@ -773,7 +753,6 @@ COPY public.workout_has_user ("Workout_id", "User_id") FROM stdin;
 
 COPY public.workouttype (id, name, description, image) FROM stdin;
 1	personal	Персональная	\N
-2	group	Групповая	\N
 \.
 
 
@@ -782,9 +761,6 @@ COPY public.workouttype (id, name, description, image) FROM stdin;
 --
 
 COPY public.workouttype_has_subscription ("WorkoutType_id", "Subscription_id") FROM stdin;
-2	1
-1	2
-2	2
 \.
 
 
@@ -792,7 +768,7 @@ COPY public.workouttype_has_subscription ("WorkoutType_id", "Subscription_id") F
 -- Name: features_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.features_id_seq', 3, true);
+SELECT pg_catalog.setval('public.features_id_seq', 1, false);
 
 
 --
@@ -806,7 +782,7 @@ SELECT pg_catalog.setval('public.gender_id_seq', 2, true);
 -- Name: gym_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.gym_id_seq', 3, true);
+SELECT pg_catalog.setval('public.gym_id_seq', 1, false);
 
 
 --
@@ -827,35 +803,35 @@ SELECT pg_catalog.setval('public.route_id_seq', 1, false);
 -- Name: subscription_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.subscription_id_seq', 2, true);
+SELECT pg_catalog.setval('public.subscription_id_seq', 1, false);
 
 
 --
 -- Name: subscriptionduration_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.subscriptionduration_id_seq', 2, true);
+SELECT pg_catalog.setval('public.subscriptionduration_id_seq', 1, false);
 
 
 --
 -- Name: subscriptiontype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.subscriptiontype_id_seq', 2, true);
+SELECT pg_catalog.setval('public.subscriptiontype_id_seq', 1, false);
 
 
 --
 -- Name: user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.user_id_seq', 2, true);
+SELECT pg_catalog.setval('public.user_id_seq', 1, true);
 
 
 --
 -- Name: usersubscription_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.usersubscription_id_seq', 3, true);
+SELECT pg_catalog.setval('public.usersubscription_id_seq', 1, false);
 
 
 --
@@ -869,7 +845,7 @@ SELECT pg_catalog.setval('public.workout_id_seq', 1, false);
 -- Name: workouttype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: root
 --
 
-SELECT pg_catalog.setval('public.workouttype_id_seq', 2, true);
+SELECT pg_catalog.setval('public.workouttype_id_seq', 1, true);
 
 
 --
