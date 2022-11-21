@@ -28,10 +28,14 @@ class WorkoutAdd(BaseModel):
     gym: str
     trainer: EmailStr
 
+    class Config:
+        orm_mode = True
+
 class PersonalWorkoutAdd(BaseModel):
     name: str
     start_date: datetime
     end_date: datetime
+    workout_type: str = "personal"
     gym: str
 
 class WorkoutEdit(BaseModel):
