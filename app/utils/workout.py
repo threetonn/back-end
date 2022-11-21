@@ -62,17 +62,22 @@ def check_subscription(db, user, workout):
 
     client_subscription = get_subscribe_user(db=db, user=user)
 
-    for subscription in client_subscription:
-        if subscription.is_acting is not True:
-            raise HTTPException(
-                status_code=403,
-                detail="Forbidden, subscription is not active!")
-        subscription_workouttypes = subscription.Subscription.WorkoutTypes
-        for workouttype in subscription_workouttypes:
-            if workouttype.id != workout.WorkoutType.id:
-                raise HTTPException(
-                    status_code=403,
-                    detail="Forbidden, subscription doesn't allow this workout type")
+    # Пройтись по всем объектам client_subscription и найти тот у которого is_acting == True
+    subscription = list(filter(
+        lambda subscription: subscription.is_acting is True, client_subscription))
+    [subscription] = subscription  # Разпаковать subscription
+    if not subscription:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden, subscription is not active!")
+
+    # Вытащить в лист все типы тренеровок из subscription
+    workout_type = list(enumerate(subscription.Subscription.WorkoutTypes))
+    [(_, workout_type)] = workout_type  # Разпаковать получившийся кортеж в листе
+    if workout.WorkoutType.id != workout_type.id:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden, subscription doesn't allow this workout type")
     return True
 
 

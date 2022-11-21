@@ -59,7 +59,7 @@ async def get_client_personal_workouts(
     return get_personal_client_workouts(db=db, user=user)
 
 
-@router.post('/group/{id}/subscribe', response_model=list[WorkoutBase], tags=[Tags.client])
+@router.post('/group/{id}/subscribe', status_code=201, tags=[Tags.client])
 async def post_client_subscribe(
     id: int,
     db: Session = Depends(get_db),
