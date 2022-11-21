@@ -283,11 +283,6 @@ def manager_subscribe_client(
     
     for client in client_list_id:
         client = db.query(User).filter(User.id == client).first()
-        if check_subscription(db = db, user = client, workout = workout) is not True:
-            raise HTTPException(
-                status_code=403, 
-                detail="Forbidden, failed subscription check"
-                )
         if not client:
             continue
         if check_subscription(db = db, user = client, workout = workout) is not True:
