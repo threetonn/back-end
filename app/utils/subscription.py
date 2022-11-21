@@ -54,9 +54,9 @@ def check_date_subscribtions(user: User, db: Session, start_date: datetime, day_
         .filter(Usersubscription.User_id == user.id, Usersubscription.end_date >= datetime.now().date())\
         .all()
     for i in user_subscriptions:
-        if i.start_date.date() < start_date < i.end_date.date() or i.start_date.date() < end_date < i.end_date.date():
+        if i.start_date.date() <= start_date <= i.end_date.date() or i.start_date.date() <= end_date <= i.end_date.date():
             raise HTTPException(status_code=400, detail="Subscribed for selected dates already subscribed")
-        if start_date < i.start_date.date() < end_date or start_date < i.end_date.date() < end_date:
+        if start_date <= i.start_date.date() <= end_date or start_date <= i.end_date.date() <= end_date:
             raise HTTPException(status_code=400, detail="Subscribed for selected dates already subscribed")
     return True
 
