@@ -39,8 +39,6 @@ def get_features_db(db: Session):
 
 def get_subscribe_user(user: User, db: Session):
     user_subscriptions = db.query(Usersubscription).filter(Usersubscription.User_id == user.id).all()
-    if not user_subscriptions:
-        raise HTTPException(status_code=404, detail="Client has no subscriptions")
     for i in user_subscriptions:
         i.subscription = add_a_field(subscription=i.Subscription)
         i.is_acting = True if i.start_date <= datetime.now() <= i.end_date else False
