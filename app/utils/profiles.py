@@ -15,7 +15,8 @@ def get_user_profile(request, user: User, db: Session):
         if i.start_date <= datetime.now() <= i.end_date:
             user.subscription = get_subscription_db(db=db, id=i.Subscription_id)
             break
-    user.image = f"http://{ request.url.hostname }:{ request.url.port }{ user.image }" if user.image else None
+    port = "" if not request.url.port else f":{ request.url.port }"
+    user.image = f"http://{ request.url.hostname }{ port }{ user.image }" if user.image else None
     user.role = user.Role.name
     user.gender = {
         "ru": "Мужчина" if user.Gender.name == "male" else "Женщина",
