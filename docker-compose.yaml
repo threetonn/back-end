@@ -10,7 +10,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_NAME}
     volumes:
-      - db:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
       - ./db.sql:/docker-entrypoint-initdb.d/db.sql
   backend:
     depends_on:
@@ -27,9 +27,6 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - APP_SECRET_STRING=${APP_SECRET_STRING}
-    volumes:
-      - ./app:/app
-      - ./app/statics:/statics
 
 volumes:
-  db:
+  db-data: {}
