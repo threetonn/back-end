@@ -32,10 +32,8 @@ def get_subscription(db: Session = Depends(get_db), user: User = Security(is_cli
 def get_subscription(id:int, db: Session = Depends(get_db)):
     return get_subscription_db(db=db, id=id)
     
-# , response_model=list[UserSubscription]
-@router.post('/{subscriptions_id}/subscribe')
-def subscribe(data, subscriptions_id: int, db: Session = Depends(get_db), user: User = Security(is_client)):
-    print(data)
-    return None
+
+@router.post('/{subscriptions_id}/subscribe', response_model=list[UserSubscription])
+def subscribe(data: Subscribe, subscriptions_id: int, db: Session = Depends(get_db), user: User = Security(is_client)):
     return subscribe_db(data=data, user=user, subscriptions_id=subscriptions_id, db=db)
 
