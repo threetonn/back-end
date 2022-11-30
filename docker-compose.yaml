@@ -27,6 +27,8 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - APP_SECRET_STRING=${APP_SECRET_STRING}
+    volumes:
+      - .:/code
 
 volumes:
   db-data: {}
