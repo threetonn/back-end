@@ -9,6 +9,8 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_NAME}
+    networks:
+      - app-network
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./db.sql:/docker-entrypoint-initdb.d/db.sql
@@ -27,8 +29,12 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - APP_SECRET_STRING=${APP_SECRET_STRING}
+    networks:
+      - app-network
     volumes:
       - .:/code
 
 volumes:
   db-data: {}
+networks:
+  app-network:
