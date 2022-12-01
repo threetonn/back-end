@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.3"
 services:
   db:
     container_name: db
@@ -9,8 +9,10 @@ services:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
       - POSTGRES_DB=${DB_NAME}
+    networks:
+      - app-network
     volumes:
-      - db:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
       - ./db.sql:/docker-entrypoint-initdb.d/db.sql
   backend:
     depends_on:
@@ -27,9 +29,12 @@ services:
       - DB_HOST=db
       - DB_PORT=5432
       - APP_SECRET_STRING=${APP_SECRET_STRING}
+    networks:
+      - app-network
     volumes:
-      - ./app:/app
-      - ./app/statics:/statics
+      - .:/code
 
 volumes:
-  db:
+  db-data: {}
+networks:
+  app-network:

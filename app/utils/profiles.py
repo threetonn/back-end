@@ -3,18 +3,14 @@ from sqlalchemy.orm import Session
 from app.schemas.profiles import EditUser, EditTrainer
 from app.auth_class import Auth
 from datetime import datetime
-from app.utils.subscription import get_subscription_db
+from app.utils.subscription import get_subscription_db, get_subscribe_user
 
 
 auth_handler = Auth()
 
 
 def get_user_profile(request, user: User, db: Session):
-    subscriptions = db.query(Usersubscription).filter(Usersubscription.User_id == user.id).all()
-    for i in subscriptions:
-        if i.start_date <= datetime.now() <= i.end_date:
-            user.subscription = get_subscription_db(db=db, id=i.Subscription_id)
-            break
+    user.subscription = get_subscribe_user(user=user, db=db)
     port = "" if not request.url.port else f":{ request.url.port }"
     user.image = f"http://{ request.url.hostname }{ port }{ user.image }" if user.image else None
     user.role = user.Role.name
