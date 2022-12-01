@@ -17,7 +17,6 @@ class TrainerBase(BaseModel):
 
 
 class WorkoutAdd(BaseModel):
-    id: int
     name: str
     start_date: datetime
     end_date: datetime
@@ -29,7 +28,6 @@ class WorkoutAdd(BaseModel):
         orm_mode = True
 
 class PersonalWorkoutAdd(BaseModel):
-    id: int
     name: str
     start_date: datetime
     end_date: datetime
@@ -37,7 +35,6 @@ class PersonalWorkoutAdd(BaseModel):
     gym: str
 
 class WorkoutEdit(BaseModel):
-    id: int
     name: str | None
     start_date: datetime | None
     end_date: datetime | None
