@@ -376,17 +376,20 @@ def delete_workout(id: int, db: Session, user: User):
 
     if not db_workout:
         raise HTTPException(status_code=404, detail="Workout not found")
-    if workout.WorkoutType.name == "personal" and workout.Trainer != user.id:
-        raise HTTPException(
-            status_code=403, detail="Forbidden, wrong trainer or workout type")
-    if workout.WorkoutType.name == "personal" and user_role != "trainer":
-        raise HTTPException(
-            status_code=403,
-            detail="Forbidden, not trainer or not personal workout")
-    if workout.WorkoutType.name == "personal" and user_role != "manager":
-        raise HTTPException(
-            status_code=403,
-            detail="Forbidden, user is not a manager or is personal workout")
+    if workout.WorkoutType.name == "personal":
+        if not workout.Trainer == user.id:
+            raise HTTPException(
+                status_code=403, 
+                detail="Forbidden, wrong trainer or not personal workout")
+        if not user_role == "trainer":
+            raise HTTPException(
+                status_code=403,
+                detail="Forbidden, user is not trainer or not personal workout")
+    if workout.WorkoutType.name != "personal":
+        if not user_role == "manager":
+            raise HTTPException(
+                status_code=403,
+                detail="Forbidden, user is not manager or not group workout")
 
     db.delete(db_workout)
     db.commit()
