@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Security
+from fastapi import APIRouter, Depends, Security, Request
 from app.database import get_db
 from sqlalchemy.orm import Session
 from app.models import User
@@ -14,8 +14,8 @@ router = APIRouter(
 
 
 @router.get('', response_model=list[WorkoutTypeBase])
-def get_workouttype(db: Session = Depends(get_db)):
-    return get_workout_type(db=db)
+def get_workouttype(request: Request, db: Session = Depends(get_db)):
+    return get_workout_type(request=request, db=db)
 
 
 @router.post('/add', response_model=WorkoutTypeBase)
