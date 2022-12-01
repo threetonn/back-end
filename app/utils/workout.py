@@ -379,7 +379,7 @@ def delete_workout(id: int, db: Session, user: User):
     if workout.WorkoutType.name == "personal" and workout.Trainer != user.id:
         raise HTTPException(
             status_code=403, detail="Forbidden, wrong trainer or workout type")
-    if workout.WorkoutType.name != "personal" and user_role != "trainer":
+    if workout.WorkoutType.name == "personal" and user_role != "trainer":
         raise HTTPException(
             status_code=403,
             detail="Forbidden, not trainer or not personal workout")
