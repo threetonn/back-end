@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, PastDate
-from app.schemas.subscription import SubscriptionBase
+from app.schemas.subscription import UserSubscription
 
 
 class Gender(BaseModel):
@@ -26,7 +26,7 @@ class UserBase(BaseModel):
 
 class ClientBase(UserBase):
     """ Информация о профиле клиента """
-    subscription: SubscriptionBase | None = None
+    subscription: list[UserSubscription]
 
 
 class WorkoutType(BaseModel):
