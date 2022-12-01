@@ -2,9 +2,13 @@ from app.models import Workouttype
 from sqlalchemy.orm import Session
 from app.schemas.workout_type import ManageWorkoutType
 
-def get_workout_type(db: Session):
+def get_workout_type(request, db: Session):
     """ Возвращает список всех типов тренировок """
-    return db.query(Workouttype).all()
+    workouttypes = db.query(Workouttype).all()
+    port = "" if not request.url.port else f":{ request.url.port }"
+    for i in workouttypes:
+        i.image = f"http://{ request.url.hostname }{ port }{ i.image }" if i.image else None
+    return workouttypes
 
 
 def get_workout_type_by_id(db: Session, id: int):
