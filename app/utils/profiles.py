@@ -2,8 +2,7 @@ from app.models import User, Workouttype, Usersubscription
 from sqlalchemy.orm import Session
 from app.schemas.profiles import EditUser, EditTrainer
 from app.auth_class import Auth
-from datetime import datetime
-from app.utils.subscription import get_subscription_db, get_subscribe_user
+from app.utils.subscription import get_subscribe_user
 
 
 auth_handler = Auth()
@@ -22,7 +21,8 @@ def get_user_profile(request, user: User, db: Session):
 
 
 def get_trainer_profile(request, user: User):
-    user.image = f"http://{ request.url.hostname }:{ request.url.port }{ user.image }" if user.image else None
+    port = "" if not request.url.port else f":{ request.url.port }"
+    user.image = f"http://{ request.url.hostname }{ port }{ user.image }" if user.image else None
     user.role = user.Role.name
     user.gender = {
         "ru": "Мужчина" if user.Gender.name == "male" else "Женщина",
