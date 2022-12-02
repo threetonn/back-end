@@ -32,7 +32,8 @@ def get_clients_db(db: Session, request: Request, search: str):
         clients = clients.filter(func.concat(User.surname, " ", User.name, " ", User.patronymic).label("full_name").contains(search))
     clients = clients.all()
     for i in clients:
-        i.image = f"http://{ request.url.hostname }:{ request.url.port }{ i.image }" if i.image else None
+        port = "" if not request.url.port else f":{ request.url.port }"
+        i.image = f"http://{ request.url.hostname }{ port }{ i.image }" if i.image else None
         i.gender = {
             "ru": "Мужчина" if i.Gender.name == "male" else "Женщина",
             "en": i.Gender.name
