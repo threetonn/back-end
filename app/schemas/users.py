@@ -34,7 +34,7 @@ class ClientBase(UserBase):
 
 class ManagerBase(UserBase):
     """ Информация о клиенте """
-    position: str
+    position: str | None = None
     
     class Config:
         orm_mode = True

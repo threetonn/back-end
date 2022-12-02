@@ -19,7 +19,7 @@ def get_managers_db(db: Session, request: Request):
     """ Возвращает список всех менеджеров """
     trainers = db.query(User).join(Role).filter(User.Role_id == Role.id).filter(Role.name == "manager").all()
     for i in trainers:
-        i.position = i.bio
+        i.position = i.bio if i.bio else None
         port = "" if not request.url.port else f":{ request.url.port }"
         i.image = f"http://{ request.url.hostname }{ port }{ i.image }" if i.image else None
     return trainers
