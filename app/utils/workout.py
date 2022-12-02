@@ -94,8 +94,6 @@ def get_group_workouts(db: Session):
         .filter(Workouttype.name != "personal").all()
 
     [get_workout_out(db, workout) for workout in workouts]
-    if not workouts:
-        raise HTTPException(status_code=404, detail="Workouts not found")
 
     return workouts
 
