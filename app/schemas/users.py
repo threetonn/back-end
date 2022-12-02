@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
+    id: int
     name: str
     surname: str
     patronymic: str | None = None
