@@ -33,6 +33,7 @@ class PersonalWorkoutAdd(BaseModel):
     end_date: datetime
     workout_type: str = "personal"
     gym: str
+    client_id: int
 
 class WorkoutEdit(BaseModel):
     name: str | None

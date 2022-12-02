@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from app.models import Workout, User, Workouttype, Gym, Usersubscription
-from app.schemas.workout import WorkoutAdd, WorkoutEdit
+from app.schemas.workout import WorkoutAdd, WorkoutEdit, PersonalWorkoutAdd
 from app.utils.subscription import get_subscribe_user
 from sqlalchemy.orm import Session
 
@@ -65,16 +65,17 @@ def check_subscription(db, user, workout):
     # Пройтись по всем объектам client_subscription и найти тот у которого is_acting == True
     subscription = list(filter(
         lambda subscription: subscription.is_acting is True, client_subscription))
+    if not subscription:
+        raise HTTPException(status_code=404, detail="Client has no subscriptions")
     [subscription] = subscription  # Разпаковать subscription
     if not subscription:
         raise HTTPException(
             status_code=403,
             detail="Forbidden, subscription is not active!")
 
-    # Вытащить в лист все типы тренеровок из subscription
-    workout_type = list(enumerate(subscription.Subscription.WorkoutTypes))
-    [(_, workout_type)] = workout_type  # Разпаковать получившийся кортеж в листе
-    if workout.WorkoutType.id != workout_type.id:
+    workout_type = subscription.Subscription.WorkoutTypes
+    workout_types_id = map(lambda item : item.id, workout_type)
+    if workout.WorkoutType.id not in workout_types_id:
         raise HTTPException(
             status_code=403,
             detail="Forbidden, subscription doesn't allow this workout type")
@@ -233,7 +234,7 @@ def get_trainer_group_workouts(db: Session, user: User):
     return workouts
 
 
-def post_workout(db: Session, workout: WorkoutAdd, user: User):
+def post_workout(db: Session, workout: WorkoutAdd | PersonalWorkoutAdd, user: User):
     """ Создать перональную или групповую тренеровку, доступно тренеру и менеджеру
         Тренер может только создать персональную тренеровку
         Менеджер может создать только групповую тренеровку """
@@ -270,6 +271,21 @@ def post_workout(db: Session, workout: WorkoutAdd, user: User):
     db.add(db_workout)
     db.commit()
     db.refresh(db_workout)
+
+    personal_workout = get_workout_by_id(id=db_workout.id, db=db)
+    if user_role == "trainer" and workout.workout_type == "personal":
+        client = db.query(User).filter(User.id == workout.client_id).first()
+        if not client:
+            raise HTTPException(status_code=404, detail="Client not found")
+        if check_subscription(db=db, user=client, workout=personal_workout) is not True:
+            raise HTTPException(
+                status_code=403,
+                detail="Forbidden, failed subscription check")
+        client.Workouts.append(personal_workout)
+        db.add(client)
+        db.commit()
+        db.refresh(client)
+
     return get_workout_out(db, db_workout)
 
 
