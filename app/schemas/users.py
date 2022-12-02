@@ -2,6 +2,7 @@ from pydantic import BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
+    id: int
     name: str
     surname: str
     patronymic: str | None = None
@@ -12,7 +13,7 @@ class UserBase(BaseModel):
 
 class TrainerBase(UserBase):
     """ Информация о тренере """
-    bio: str
+    bio: str | None = None
     workout_type: list[str]
     
     class Config:
@@ -34,7 +35,7 @@ class ClientBase(UserBase):
 
 class ManagerBase(UserBase):
     """ Информация о клиенте """
-    position: str
+    position: str | None = None
     
     class Config:
         orm_mode = True
