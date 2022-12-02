@@ -8,6 +8,7 @@ def get_trainers_db(db: Session, request: Request, page: int, limit: int):
     """ Возвращает список всех тренеров """
     trainers = db.query(User).join(Role).filter(User.Role_id == Role.id).filter(Role.name == "trainer").all()
     for i in trainers:
+        i.bio = i.bio if i.bio else None
         i.workout_type = [i.description for i in i.WorkoutTypes]
         i.image = f"http://{ request.url.hostname }:{ request.url.port }{ i.image }" if i.image else None
     return trainers[(page - 1) * limit : page * limit]
