@@ -10,6 +10,7 @@ class Gender(BaseModel):
 
 class UserBase(BaseModel):
     """ Информация в профиле клиента """
+    id: int
     name: str
     surname: str
     patronymic: str | None = None
