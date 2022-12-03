@@ -30,6 +30,8 @@ def get_trainer_profile(request, user: User):
     }
     user.bio = user.bio if user.bio else "О себе..."
     user.workout_type = user.WorkoutTypes
+    for workout_type in user.workout_type:
+        workout_type.image = f"http://{ request.url.hostname }{ port }{ workout_type.image }" if workout_type.image else None
     return user
 
 
