@@ -11,7 +11,9 @@ from app.utils.workout import (
     manager_subscribe_client, manager_unsubscribe_client,
     get_all_subscribed_clients
 )
-from app.schemas.workout import WorkoutBase, WorkoutAdd, WorkoutEdit, PersonalWorkoutAdd
+from app.schemas.workout import (
+    WorkoutBase, WorkoutAdd, WorkoutEdit, 
+    PersonalWorkoutAdd)
 from app.permissions import is_admin, is_manager, is_trainer, is_client, is_not_client
 from app.models import User
 

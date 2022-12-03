@@ -52,7 +52,7 @@ class WorkoutBase(BaseModel):
     workout_type: str
     gym: GymBase
     trainer: TrainerBase
-
+    clients: list[int]
 
     class Config:
         orm_mode = True

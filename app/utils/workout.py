@@ -137,9 +137,6 @@ def get_specific_personal_workout(id: int, db: Session, user: User):
                 for workout in user.Workouts
                 if workout.id == id
                 and workout.WorkoutType.name == "personal"]
-    if workouts:
-        return workouts[0]
-    raise HTTPException(status_code=404, detail="Personal workout not found")
 
 
 def get_group_client_workouts(db: Session, user: User):
@@ -148,8 +145,6 @@ def get_group_client_workouts(db: Session, user: User):
     workouts = [get_workout_out(db, workout)
                 for workout in user.Workouts
                 if workout.WorkoutType.name != "personal"]
-    if not workouts:
-        raise HTTPException(status_code=404, detail="Workouts not found")
     return workouts
 
 
@@ -158,9 +153,7 @@ def post_subscribe_client(id: int, db: Session, user: User):
 
     workout = get_workout_by_id(id, db)
 
-    if not db.query(Usersubscription).filter(Usersubscription.User_id == user.id).all():
-        raise HTTPException(
-            status_code=404, detail="Client has not subscriptions")
+
     if check_subscription(db=db, user=user, workout=workout) is not True:
         raise HTTPException(
             status_code=403,
@@ -199,8 +192,8 @@ def get_trainer_workouts(db: Session, user: User):
     workouts = [get_workout_out(db, workout)
                 for workout
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()]
-    if not workouts:
-        raise HTTPException(status_code=404, detail="Trainer has no workouts")
+    for workout in workouts:
+        workout.clients = list(map(lambda client : client.id, workout.Clients))
     return workouts
 
 
@@ -211,9 +204,8 @@ def get_trainer_personal_workouts(db: Session, user: User):
                 for workout
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()
                 if workout.WorkoutType.name == "personal"]
-    if not workouts:
-        raise HTTPException(
-            status_code=404, detail="Trainer has no personal workouts")
+    for workout in workouts:
+        workout.clients = list(map(lambda client : client.id, workout.Clients))
     return workouts
 
 
@@ -224,9 +216,8 @@ def get_trainer_group_workouts(db: Session, user: User):
                 for workout
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()
                 if workout.WorkoutType.name != "personal"]
-    if not workouts:
-        raise HTTPException(
-            status_code=404, detail="Trainer has no group workouts")
+    for workout in workouts:
+        workout.clients = list(map(lambda client : client.id, workout.Clients))
     return workouts
 
 
@@ -310,9 +301,6 @@ def manager_subscribe_client(
     if workout.WorkoutType.name == "personal":
         raise HTTPException(
             status_code=403, detail="Forbidden, workout is personal")
-    if not db.query(Usersubscription).filter(Usersubscription.User_id == user.id).all():
-        raise HTTPException(
-            status_code=404, detail="Client has not subscriptions")
 
     for client in client_list_id:
         client = db.query(User).filter(User.id == client).first()
