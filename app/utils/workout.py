@@ -115,8 +115,6 @@ def get_all_client_workouts(db: Session, user: User):
     """ Получить все тренеровки этого клиента """
 
     workouts = [get_workout_out(db, workout) for workout in user.Workouts]
-    if not workouts:
-        raise HTTPException(status_code=404, detail="Client has no workouts")
     return workouts
 
 
