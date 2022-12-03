@@ -11,6 +11,7 @@ def get_workout_out(db: Session, workout: Workout):
     trainer = db.query(User).filter(User.id == workout.Trainer).first()
     trainer.gender = trainer.Gender.name
     workout.trainer = trainer
+    workout.clients = list(map(lambda client : client.id, workout.Clients))
     return workout
 
 
@@ -192,8 +193,6 @@ def get_trainer_workouts(db: Session, user: User):
     workouts = [get_workout_out(db, workout)
                 for workout
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()]
-    for workout in workouts:
-        workout.clients = list(map(lambda client : client.id, workout.Clients))
     return workouts
 
 
@@ -204,8 +203,6 @@ def get_trainer_personal_workouts(db: Session, user: User):
                 for workout
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()
                 if workout.WorkoutType.name == "personal"]
-    for workout in workouts:
-        workout.clients = list(map(lambda client : client.id, workout.Clients))
     return workouts
 
 
@@ -216,8 +213,6 @@ def get_trainer_group_workouts(db: Session, user: User):
                 for workout
                 in db.query(Workout).filter(Workout.Trainer == user.id).all()
                 if workout.WorkoutType.name != "personal"]
-    for workout in workouts:
-        workout.clients = list(map(lambda client : client.id, workout.Clients))
     return workouts
 
 
