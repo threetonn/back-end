@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunktriton"]=self["webpackChunktriton"]||[]).push([[6030],{6030:function(t,n,u){function e(t,n,u,e){let r=Math.abs(t);return r%=100,r>=5&&r<=20?e:(r%=10,1===r?n:r>=2&&r<=4?u:e)}u.r(n),u.d(n,{getNoun:function(){return e}})}}]);
+//# sourceMappingURL=6030.bfd4d30c.js.map

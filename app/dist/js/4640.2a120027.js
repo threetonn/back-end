@@ -1,0 +1,1 @@
+"use strict";(self["webpackChunktriton"]=self["webpackChunktriton"]||[]).push([[4640],{4640:function(c,t,s){c.exports=s.p+"img/coach.cb212c64.svg"}}]);

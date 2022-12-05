@@ -1,0 +1,1 @@
+"use strict";(self["webpackChunktriton"]=self["webpackChunktriton"]||[]).push([[2360],{2360:function(e,t,c){e.exports=c.p+"img/camera.cc7e7d8a.svg"}}]);

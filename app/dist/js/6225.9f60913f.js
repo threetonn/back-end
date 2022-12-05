@@ -1,0 +1,2 @@
+"use strict";(self["webpackChunktriton"]=self["webpackChunktriton"]||[]).push([[6225],{6225:function(r,n,t){t.r(n),t.d(n,{default:function(){return d}});var c=t(3396),e=t(7139);const s={class:"block-2--card"},a=["src"],i={class:"block-2--image-text"};function o(r,n,t,o,u,l){return(0,c.wg)(),(0,c.iD)("div",s,[(0,c._)("img",{src:t.program.image},null,8,a),(0,c._)("div",i,[(0,c._)("p",null,(0,e.zw)(t.program.description),1)])])}var u={props:{program:Object}},l=t(89);const p=(0,l.Z)(u,[["render",o]]);var d=p}}]);
+//# sourceMappingURL=6225.9f60913f.js.map

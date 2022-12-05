@@ -1,0 +1,1 @@
+"use strict";(self["webpackChunktriton"]=self["webpackChunktriton"]||[]).push([[6286],{6286:function(e,n,t){e.exports=t.p+"img/men2.fa3fed7a.png"}}]);

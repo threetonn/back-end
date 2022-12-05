@@ -1,0 +1,1 @@
+"use strict";(self["webpackChunktriton"]=self["webpackChunktriton"]||[]).push([[850],{850:function(t,e,p){t.exports=p.p+"img/profile-bg.0a39a1d3.jpg"}}]);

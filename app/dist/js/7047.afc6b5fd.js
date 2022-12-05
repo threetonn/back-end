@@ -1,0 +1,1 @@
+"use strict";(self["webpackChunktriton"]=self["webpackChunktriton"]||[]).push([[7047],{7047:function(t,n,e){t.exports=e.p+"img/card-bg4.7089f63f.png"}}]);

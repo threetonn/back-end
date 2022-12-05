@@ -19,6 +19,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount("/dist", StaticFiles(directory=BASEDIR + "/"), name="dist")
+
 app.include_router(auth.router)
 
 app.include_router(access.router)
