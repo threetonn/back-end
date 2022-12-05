@@ -20,12 +20,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get('/', response_class=FileResponse)
-def main():
-    return FileResponse('app/dist/index.html')
-
-app.mount("/", StaticFiles(directory=BASEDIR + "/dist"), name="dist")
-
 app.include_router(auth.router)
 
 app.include_router(access.router)
@@ -44,3 +38,9 @@ app.include_router(gym.router)
 app.include_router(workout.router)
 
 app.mount("/static", StaticFiles(directory=BASEDIR + "/statics"), name="static")
+
+@app.get('/', response_class=FileResponse)
+def main():
+    return FileResponse('app/dist/index.html')
+
+app.mount("/", StaticFiles(directory=BASEDIR + "/dist"), name="dist")
