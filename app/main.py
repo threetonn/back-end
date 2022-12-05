@@ -24,7 +24,7 @@ app.add_middleware(
 def main():
     return FileResponse('app/dist/index.html')
 
-app.mount("/dist", StaticFiles(directory=BASEDIR + "/dist"), name="dist")
+app.mount("/", StaticFiles(directory=BASEDIR + "/dist"), name="dist")
 
 app.include_router(auth.router)
 
