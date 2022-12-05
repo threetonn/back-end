@@ -3,6 +3,7 @@ from app.routers import auth, profiles, role, gender, workout_type, workout, gym
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import os
+from fastapi.responses import FileResponse
 
 
 BASEDIR = os.path.dirname(__file__)
@@ -18,6 +19,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get('/', response_class=FileResponse)
+def main():
+    return FileResponse('app/dist/index.html')
 
 app.mount("/dist", StaticFiles(directory=BASEDIR + "/"), name="dist")
 
